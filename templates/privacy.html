@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy - Neon Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .privacy-container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: var(--gradient-dark);
+            border-radius: 20px;
+            border: 2px solid var(--accent-pink);
+            box-shadow: 0 0 30px rgba(255,0,255,0.2);
+        }
+        .privacy-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--accent-pink);
+        }
+        .privacy-header h1 {
+            color: var(--accent-pink);
+            font-size: 2rem;
+        }
+        .privacy-header .last-updated {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+        .privacy-section {
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: rgba(0,0,0,0.3);
+            border-radius: 12px;
+            border-left: 4px solid var(--accent-green);
+        }
+        .privacy-section h2 {
+            color: var(--accent-green);
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+        }
+        .privacy-section h3 {
+            color: var(--accent-pink);
+            font-size: 1.1rem;
+            margin: 1rem 0 0.5rem 0;
+        }
+        .privacy-section p, .privacy-section li {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 0.5rem;
+        }
+        .privacy-section ul {
+            margin-left: 2rem;
+            margin-bottom: 1rem;
+        }
+        .privacy-section li {
+            margin-bottom: 0.3rem;
+        }
+        .contact-info {
+            background: rgba(0,255,0,0.1);
+            padding: 1rem;
+            border-radius: 10px;
+            text-align: center;
+            margin-top: 1rem;
+        }
+        .contact-info a {
+            color: var(--accent-pink);
+            text-decoration: none;
+        }
+        .contact-info a:hover {
+            color: var(--accent-green);
+        }
+        .back-btn {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.8rem 2rem;
+            background: var(--gradient-pink);
+            color: white;
+            border-radius: 10px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        .back-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 20px rgba(255,0,255,0.5);
+        }
+        @media (max-width: 768px) {
+            .privacy-container { padding: 1.5rem; margin: 1rem; }
+            .privacy-section h2 { font-size: 1.1rem; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <img src="https://i.ibb.co/1GBn25c5/VID-20260310-172522-610-ezgif-com-video-to-gif-converter.gif" alt="Logo" class="nav-logo">
+            <div class="nav-user">
+                <i class="fas fa-shield-alt"></i> Privacy Policy
+            </div>
+            <a href="{{ url_for('index') }}" class="btn-logout">
+                <i class="fas fa-home"></i> Home
+            </a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="privacy-container">
+            <div class="privacy-header">
+                <h1><i class="fas fa-shield-alt"></i> Privacy Policy</h1>
+                <p class="last-updated">Last Updated: May 13, 2026</p>
+                <p style="color: var(--accent-green);">Your privacy is important to us. We are committed to protecting your personal information.</p>
+            </div>
+
+            <div class="privacy-section">
+                <h2><i class="fas fa-info-circle"></i> 1. Information We Collect</h2>
+                <p>We collect the following types of information:</p>
+                <ul>
+                    <li><strong>Account Information:</strong> Username, email address, Discord ID, and hashed password.</li>
+                    <li><strong>Transaction Data:</strong> Payment history, UTR numbers, order IDs, and credit balances.</li>
+                    <li><strong>License Information:</strong> Generated keys, product usage, expiry dates, and HWID resets.</li>
+                    <li><strong>Technical Data:</strong> IP address, browser type, device information, and access timestamps.</li>
+                </ul>
+            </div>
+
+            <div class="privacy-section">
+                <h2><i class="fas fa-database"></i> 2. How We Use Your Information</h2>
+                <p>We use your information for:</p>
+                <ul>
+                    <li>✅ Creating and managing your account</li>
+                    <li>✅ Processing payments and adding credits to your account</li>
+                    <li>✅ Generating license keys for products you purchase</li>
+                    <li>✅ Verifying Discord membership for registration</li>
+                    <li>✅ Sending important notifications about your account</li>
+                    <li>✅ Improving our services and user experience</li>
+                    <li>✅ Preventing fraud and unauthorized access</li>
+                </ul>
+            </div>
+
+            <div class="privacy-section">
+                <h2><i class="fas fa-share"></i> 3. Information Sharing</h2>
+                <p>We <strong>DO NOT</strong> sell, trade, or rent your personal information to third parties. We may share data only:</p>
+                <ul>
+                    <li>📌 With payment processors (Razorpay, Binance) to complete transactions</li>
+                    <li>📌 With Discord API to verify server membership</li>
+                    <li>📌 When required by law or legal process</li>
+                    <li>📌 To protect our rights, property, or safety</li>
+                </ul>
+            </div>
+
+            <div class="privacy-section">
+                <h2><i class="fas fa-cookie-bite"></i> 4. Cookies & Tracking</h2>
+                <p>We use cookies to:</p>
+                <ul>
+                    <li>🍪 Maintain your login session</li>
+                    <li>🍪 Remember your preferences</li>
+                    <li>🍪 Analyze website traffic and usage patterns</li>
+                </ul>
+                <p>You can disable cookies in your browser settings, but this may affect website functionality.</p>
+            </div>
+
+            <div class="privacy-section">
+                <h2><i class="fas fa-lock"></i> 5. Data Security</h2>
+                <p>We implement industry-standard security measures:</p>
+                <ul>
+                    <li>🔒 Passwords are encrypted using bcrypt hashing</li>
+                    <li>🔒 All connections use SSL/TLS encryption</li>
+                    <li>🔒 Regular security updates and monitoring</li>
+                    <li>🔒 Limited access to personal data by staff</li>
+                </ul>
+                <p><strong>⚠️ Note:</strong> No method of transmission over the internet is 100% secure. While we strive to protect your data, we cannot guarantee absolute security.</p>
+            </div>
+
+            <div class="privacy-section">
+                <h2><i class="fas fa-clock"></i> 6. Data Retention</h2>
+                <p>We retain your data for as long as your account is active. After account deletion:</p>
+                <ul>
+                    <li>🗑️ Personal information is permanently deleted within 30 days</li>
+                    <li>🗑️ Transaction records may be kept for legal compliance (up to 7 years)</li>
+                    <li>🗑️ Anonymized usage data may be retained for analytics</li>
+                </ul>
+            </div>
+
+            <div class="privacy-section">
+                <h2><i class="fas fa-user-graduate"></i> 7. Your Rights</h2>
+                <p>You have the right to:</p>
+                <ul>
+                    <li>📖 Access all personal data we hold about you</li>
+                    <li>✏️ Correct inaccurate or incomplete information</li>
+                    <li>🗑️ Request deletion of your account and data</li>
+                    <li>📤 Export your data in a portable format</li>
+                    <li>🚫 Opt-out of non-essential communications</li>
+                </ul>
+                <p>To exercise these rights, contact our support team via Telegram.</p>
+            </div>
+
+            <div class="privacy-section">
+                <h2><i class="fas fa-child"></i> 8. Children's Privacy</h2>
+                <p>Our services are <strong>not intended for users under 13 years of age</strong>. We do not knowingly collect information from children under 13. If you believe a child has provided us with personal information, please contact us immediately.</p>
+            </div>
+
+            <div class="privacy-section">
+                <h2><i class="fas fa-exchange-alt"></i> 9. Changes to This Policy</h2>
+                <p>We may update this Privacy Policy from time to time. We will notify users of any material changes by:</p>
+                <ul>
+                    <li>📧 Sending a notification to your account</li>
+                    <li>🔔 Posting an announcement on our Telegram channel</li>
+                    <li>📝 Updating the "Last Updated" date at the top of this page</li>
+                </ul>
+            </div>
+
+            <div class="privacy-section">
+                <h2><i class="fas fa-envelope"></i> 10. Contact Us</h2>
+                <div class="contact-info">
+                    <p><i class="fab fa-telegram"></i> <strong>Telegram Support:</strong> <a href="https://t.me/SMGrowMarthqofc" target="_blank">@SMGrowMarthqofc</a></p>
+                    <p><i class="fab fa-whatsapp"></i> <strong>WhatsApp Channel:</strong> <a href="https://whatsapp.com/channel/0029Vb8933MC6ZvoqBiPVq2h" target="_blank">Join for Updates</a></p>
+                    <p><i class="fab fa-discord"></i> <strong>Discord Server:</strong> <a href="https://discord.gg/ATK3JcG7rB" target="_blank">Join Discord</a></p>
+                    <p><i class="fas fa-envelope"></i> <strong>Email:</strong> support@neondashboard.com</p>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 2rem;">
+                <a href="{{ url_for('index') }}" class="back-btn">
+                    <i class="fas fa-arrow-left"></i> Back to Home
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div style="text-align: center; padding: 2rem; color: var(--text-secondary); font-size: 0.8rem;">
+        <p>&copy; 2026 Neon Dashboard. All rights reserved.</p>
+        <p>
+            <a href="{{ url_for('privacy') }}" style="color: var(--accent-pink);">Privacy Policy</a> |
+            <a href="#" style="color: var(--accent-pink);">Terms of Service</a> |
+            <a href="#" style="color: var(--accent-pink);">Contact Us</a>
+        </p>
+    </div>
+</body>
+</html>
