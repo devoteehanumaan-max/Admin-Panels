@@ -762,7 +762,7 @@ def index():
         if session.get('role') == 'admin':
             return redirect(url_for('admin_dashboard'))
         return redirect(url_for('user_dashboard'))
-    return redirect(url_for('login'))
+    return render_template('index.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -847,7 +847,7 @@ def register():
             conn.commit()
             conn.close()
             logging.info(f"✅ User registered successfully: {username}")
-            return redirect(url_for('login'))
+            return render_template('index.html')
         except Exception as e:
             conn.close()
             logging.error(f"❌ Registration error: {e}")
@@ -871,7 +871,7 @@ def register():
 @app.route('/logout')
 def logout():
     session.clear()
-    return redirect(url_for('login'))
+    return render_template('index.html')
 
 # ============================================
 # USER DASHBOARD
@@ -880,7 +880,7 @@ def logout():
 @app.route('/dashboard')
 def user_dashboard():
     if 'username' not in session or session.get('role') != 'user':
-        return redirect(url_for('login'))
+        return render_template('index.html')
     
     conn = get_db_connection()
     c = conn.cursor()
@@ -891,7 +891,7 @@ def user_dashboard():
     if not user:
         session.clear()
         conn.close()
-        return redirect(url_for('login'))
+        return render_template('index.html')
     
     session['credits'] = float(user['credits'])
     
@@ -993,7 +993,7 @@ def generate_key_route():
 @app.route('/payment')
 def payment_page():
     if 'username' not in session:
-        return redirect(url_for('login'))
+        return render_template('index.html')
     
     return render_template('payment.html',
                          min_recharge=MINIMUM_RECHARGE,
@@ -1007,7 +1007,7 @@ def payment_page():
 @app.route('/payment/upi', methods=['GET', 'POST'])
 def upi_payment():
     if 'username' not in session:
-        return redirect(url_for('login'))
+        return render_template('index.html')
     
     if request.method == 'POST':
         utr = request.form.get('utr', '').strip()
@@ -1096,7 +1096,7 @@ def upi_payment():
 @app.route('/payment/binance', methods=['GET', 'POST'])
 def binance_payment():
     if 'username' not in session:
-        return redirect(url_for('login'))
+        return render_template('index.html')
     
     if request.method == 'POST':
         amount_inr = float(request.form.get('amount', 0))
@@ -1239,7 +1239,7 @@ def generate_payment_qr():
 @app.route('/admin')
 def admin_dashboard():
     if 'username' not in session or session.get('role') != 'admin':
-        return redirect(url_for('login'))
+        return render_template('index.html')
     
     conn = get_db_connection()
     c = conn.cursor()
