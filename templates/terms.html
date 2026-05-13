@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terms of Service - Neon Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .terms-container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: var(--gradient-dark);
+            border-radius: 20px;
+            border: 2px solid var(--accent-pink);
+        }
+        .terms-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--accent-pink);
+        }
+        .terms-section {
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: rgba(0,0,0,0.3);
+            border-radius: 12px;
+            border-left: 4px solid var(--accent-green);
+        }
+        .terms-section h2 {
+            color: var(--accent-green);
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+        }
+        .terms-section p, .terms-section li {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+        .terms-section ul {
+            margin-left: 2rem;
+            margin-bottom: 1rem;
+        }
+        .back-btn {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.8rem 2rem;
+            background: var(--gradient-pink);
+            color: white;
+            border-radius: 10px;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <img src="https://i.ibb.co/1GBn25c5/VID-20260310-172522-610-ezgif-com-video-to-gif-converter.gif" alt="Logo" class="nav-logo">
+            <div class="nav-user">Terms of Service</div>
+            <a href="{{ url_for('index') }}" class="btn-logout">Home</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="terms-container">
+            <div class="terms-header">
+                <h1><i class="fas fa-file-contract"></i> Terms of Service</h1>
+                <p>Last Updated: May 13, 2026</p>
+            </div>
+
+            <div class="terms-section">
+                <h2>1. Acceptance of Terms</h2>
+                <p>By accessing or using Neon Dashboard, you agree to be bound by these Terms of Service. If you disagree with any part, please do not use our services.</p>
+            </div>
+
+            <div class="terms-section">
+                <h2>2. Account Registration</h2>
+                <ul>
+                    <li>You must be at least 13 years old to register</li>
+                    <li>You must join our Discord server before registration</li>
+                    <li>You are responsible for maintaining account security</li>
+                    <li>One account per person - multiple accounts will be banned</li>
+                </ul>
+            </div>
+
+            <div class="terms-section">
+                <h2>3. Credits & Payments</h2>
+                <ul>
+                    <li>Credits are non-refundable after purchase</li>
+                    <li>Prices are subject to change without notice</li>
+                    <li>Minimum recharge amount is ₹1000</li>
+                    <li>All payments are final - no chargebacks</li>
+                </ul>
+            </div>
+
+            <div class="terms-section">
+                <h2>4. License Keys</h2>
+                <ul>
+                    <li>Keys are for personal use only - sharing = ban</li>
+                    <li>Keys expire after the purchased duration</li>
+                    <li>We reserve right to revoke keys for violations</li>
+                </ul>
+            </div>
+
+            <div class="terms-section">
+                <h2>5. Prohibited Activities</h2>
+                <ul>
+                    <li>❌ Sharing or reselling license keys</li>
+                    <li>❌ Attempting to hack/exploit the system</li>
+                    <li>❌ Using VPN/proxy to bypass restrictions</li>
+                    <li>❌ Harassing staff or other users</li>
+                </ul>
+            </div>
+
+            <div class="terms-section">
+                <h2>6. Termination</h2>
+                <p>We may terminate accounts for:</p>
+                <ul>
+                    <li>Violation of these terms</li>
+                    <li>Chargeback or payment fraud</li>
+                    <li>Inactivity for 12+ months</li>
+                </ul>
+            </div>
+
+            <div style="text-align: center;">
+                <a href="{{ url_for('index') }}" class="back-btn">Back to Home</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
