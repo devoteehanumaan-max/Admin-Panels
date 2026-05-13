@@ -12,6 +12,9 @@
         <div class="nav-container">
             <img src="https://i.ibb.co/1GBn25c5/VID-20260310-172522-610-ezgif-com-video-to-gif-converter.gif" alt="Logo" class="nav-logo">
             <div class="nav-user">👑 Admin: {{ session.username }}</div>
+            <button id="send-notification-btn" class="btn-notification">
+                <i class="fas fa-bell"></i> Send Notification
+            </button>
             <a href="{{ url_for('logout') }}" class="btn-logout">
                 <i class="fas fa-sign-out-alt"></i> Logout
             </a>
@@ -60,6 +63,9 @@
             <button class="tab-btn" data-tab="products">
                 <i class="fas fa-box"></i> Products
             </button>
+            <button class="tab-btn" data-tab="keytypes">
+                <i class="fas fa-cog"></i> Key Types
+            </button>
         </div>
 
         <!-- USERS TAB -->
@@ -80,27 +86,17 @@
                         <tbody>
                             {% for user in users %}
                             <tr>
+                                <td><i class="fas fa-user-circle"></i> <strong>{{ user.username }}</strong></td>
+                                <td><span class="status-badge status-active"><i class="fas fa-coins"></i> {{ user.credits }}</span></td>
+                                <td>₹{{ user.total_recharged or 0 }}</td>
+                                <td>{% if user.created_at %}{% if user.created_at is string %}{{ user.created_at[:10] }}{% else %}{{ user.created_at.strftime('%Y-%m-%d') }}{% endif %}{% else %}N/A{% endif %}</td>
                                 <td>
-                                    <i class="fas fa-user-circle"></i> 
-                                    <strong>{{ user[1] }}</strong>
-                                </td>
-                                <td>
-                                    <span class="status-badge status-active">
-                                        <i class="fas fa-coins"></i> {{ user[4] }}
-                                    </span>
-                                </td>
-                                <td>₹{{ user[5] or 0 }}</td>
-                                <td>{{ user[6][:10] if user[6] else 'N/A' }}</td>
-                                <td>
-                                    <button class="btn-small btn-add-credits" data-username="{{ user[1] }}">
+                                    <button class="btn-small btn-add-credits" data-username="{{ user.username }}">
                                         <i class="fas fa-plus-circle"></i> Add Credits
                                     </button>
-                                    <button class="btn-small btn-danger btn-delete-user" data-username="{{ user[1] }}">
+                                    <button class="btn-small btn-danger btn-delete-user" data-username="{{ user.username }}">
                                         <i class="fas fa-trash"></i> Delete
                                     </button>
-                                    <a href="{{ whatsapp_link }}" target="_blank" class="btn-small btn-whatsapp-small">
-                                        <i class="fab fa-whatsapp"></i> Chat
-                                    </a>
                                 </td>
                             </tr>
                             {% endfor %}
@@ -118,8 +114,9 @@
                     <table>
                         <thead>
                             <tr>
+                                <th>Method</th>
                                 <th>User</th>
-                                <th>UTR</th>
+                                <th>UTR/Order</th>
                                 <th>Amount</th>
                                 <th>Credits</th>
                                 <th>Date</th>
@@ -131,35 +128,48 @@
                             {% for payment in payments %}
                             <tr>
                                 <td>
-                                    <i class="fas fa-user"></i> {{ payment[1] }}
-                                </td>
-                                <td>
-                                    <code>{{ payment[2] }}</code>
-                                </td>
-                                <td>
-                                    <strong>₹{{ payment[3] }}</strong>
-                                </td>
-                                <td>
-                                    <span class="neon-text-green">{{ payment[4] }}</span>
-                                </td>
-                                <td>{{ payment[6][:16] }}</td>
-                                <td>
-                                    <span class="status-badge status-{{ payment[5] }}">
-                                        {{ payment[5] }}
-                                    </span>
-                                </td>
-                                <td>
-                                    {% if payment[5] == 'pending' %}
-                                    <button class="btn-small btn-approve-payment" data-payment-id="{{ payment[0] }}">
-                                        <i class="fas fa-check-circle"></i> Approve
-                                    </button>
-                                    <button class="btn-small btn-danger btn-reject-payment" data-payment-id="{{ payment[0] }}">
-                                        <i class="fas fa-times-circle"></i> Reject
-                                    </button>
+                                    {% if payment.payment_method == 'binance' %}
+                                    <span class="key-type-badge" style="background: #f0b90b; color: black;">BINANCE</span>
+                                    {% else %}
+                                    <span class="key-type-badge">UPI</span>
                                     {% endif %}
-                                    <a href="{{ whatsapp_link }}" target="_blank" class="btn-small btn-whatsapp-small">
-                                        <i class="fab fa-whatsapp"></i>
-                                    </a>
+                                </td>
+                                <td>{{ payment.username }}</td>
+                                <td><code>{{ payment.utr or payment.order_id }}</code></td>
+                                <td>₹{{ payment.amount }}</td>
+                                <td>{{ payment.credits_added }}</td>
+                                <td>{% if payment.date %}{% if payment.date is string %}{{ payment.date[:16] }}{% else %}{{ payment.date.strftime('%Y-%m-%d %H:%M') }}{% endif %}{% else %}N/A{% endif %}</td>
+                                <td><span class="status-badge status-{{ payment.status }}">{{ payment.status }}</span></td>
+                                <td>
+                                    {% if payment.status == 'pending' %}
+                                        {% if payment.payment_method == 'upi' %}
+                                        <button class="btn-small btn-approve-payment" data-payment-id="{{ payment.id }}">
+                                            <i class="fas fa-check-circle"></i> Approve
+                                        </button>
+                                        <button class="btn-small btn-danger btn-reject-payment" data-payment-id="{{ payment.id }}">
+                                            <i class="fas fa-times-circle"></i> Reject
+                                        </button>
+                                        {% elif payment.payment_method == 'binance' %}
+                                        <button class="btn-small btn-danger btn-reject-payment" data-payment-id="{{ payment.id }}">
+                                            <i class="fas fa-times-circle"></i> Reject
+                                        </button>
+                                        <button class="btn-small btn-cancel-binance" data-order-id="{{ payment.order_id }}" style="background: #ff9800; color: white;">
+                                            <i class="fas fa-ban"></i> Cancel
+                                        </button>
+                                        {% endif %}
+                                    {% elif payment.status == 'approved' %}
+                                        <span class="status-badge status-active">Approved</span>
+                                        {% if payment.approved_by %}<br><small>by {{ payment.approved_by }}</small>{% endif %}
+                                    {% elif payment.status == 'rejected' %}
+                                        <span class="status-badge status-inactive">Rejected</span>
+                                        {% if payment.rejection_reason %}<br><small style="color: var(--accent-red);">{{ payment.rejection_reason }}</small>{% endif %}
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="8" style="text-align: center; color: var(--text-secondary);">
+                                    No payment requests found
                                 </td>
                             </tr>
                             {% endfor %}
@@ -190,22 +200,14 @@
                         <tbody>
                             {% for license in licenses %}
                             <tr>
-                                <td class="key-cell">{{ license[1] }}</td>
-                                <td>{{ license[2] }}</td>
-                                <td>{{ license[3] }}</td>
-                                <td>{{ license[4] }} days</td>
-                                <td>{{ license[5] }}</td>
-                                <td>{{ license[6][:16] }}</td>
-                                <td>
-                                    <span class="status-badge status-{{ license[7] }}">
-                                        {{ license[7] }}
-                                    </span>
-                                </td>
-                                <td>
-                                    <button class="btn-small btn-danger btn-delete-key" data-license-id="{{ license[0] }}">
-                                        <i class="fas fa-trash"></i> Delete
-                                    </button>
-                                </td>
+                                <td class="key-cell">{{ license.key }}</td>
+                                <td>{{ license.username }}</td>
+                                <td>{{ license.product_name }}</td>
+                                <td>{{ license.days }} days</td>
+                                <td>{{ license.total_credits }}</td>
+                                <td>{% if license.expiry_date %}{% if license.expiry_date is string %}{{ license.expiry_date[:16] }}{% else %}{{ license.expiry_date.strftime('%Y-%m-%d %H:%M') }}{% endif %}{% else %}N/A{% endif %}</td>
+                                <td><span class="status-badge status-{{ license.status }}">{{ license.status }}</span></td>
+                                <td><button class="btn-small btn-danger btn-delete-key" data-license-id="{{ license.id }}"><i class="fas fa-trash"></i> Delete</button></td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -245,15 +247,17 @@
                     <div class="form-group">
                         <label><i class="fas fa-key"></i> Key Type:</label>
                         <select id="new-product-keytype">
-                            <option value="fluorite">🔑 Fluorite/Gbox (16 chars)</option>
-                            <option value="drip">🔢 Drip (10 digits)</option>
-                            <option value="hg">🎯 HG Cheat (HG-XXXXXX)</option>
-                            <option value="brmod">👥 BRMod (Username+Password)</option>
-                            <option value="lkteam">⚡ LKTEAM (LKTEAM-XXXXXX)</option>
-                            <option value="strict">🔒 Strict (STRICT-8 digits)</option>
-                            <option value="spotify">🎵 Spotify (Email+Password)</option>
-                            <option value="standard">📦 Standard (KEY-XXXX-XXXX)</option>
+                            {% for key_type in key_types %}
+                            <option value="{{ key_type.type_name }}">{{ key_type.type_name }} - {{ key_type.description }}</option>
+                            {% endfor %}
+                            <option value="custom">🔧 Custom Pattern</option>
                         </select>
+                    </div>
+                    
+                    <div class="form-group" id="custom-pattern-group" style="display: none;">
+                        <label><i class="fas fa-code"></i> Custom Pattern:</label>
+                        <input type="text" id="new-product-custom-pattern" placeholder="e.g., MYKEY-{RANDOM8}-{DATE}">
+                        <small>Use {RANDOM4}, {RANDOM8}, {DIGITS6}, {DATE}, {USER4}, {PASS8} etc.</small>
                     </div>
                     
                     <div class="flex gap-2">
@@ -275,6 +279,7 @@
                                 <th>Credits/Day</th>
                                 <th>Price/Day</th>
                                 <th>Key Type</th>
+                                <th>Custom Pattern</th>
                                 <th>Status</th>
                                 <th>Actions</th>
                             </tr>
@@ -282,33 +287,92 @@
                         <tbody>
                             {% for product in products %}
                             <tr>
+                                <td><strong>{{ product.name }}</strong></td>
+                                <td><span class="neon-text-green">{{ product.credit_cost_per_day }}</span></td>
+                                <td>₹{{ product.price_per_day }}</td>
+                                <td><span class="key-type-badge">{{ product.key_type }}</span></td>
+                                <td><code>{{ product.custom_key_pattern or '-' }}</code></td>
                                 <td>
-                                    <strong>{{ product[1] }}</strong>
-                                </td>
-                                <td>
-                                    <span class="neon-text-green">{{ product[2] }}</span>
-                                </td>
-                                <td>₹{{ product[3] }}</td>
-                                <td>
-                                    <span class="key-type-badge">{{ product[4] }}</span>
-                                </td>
-                                <td>
-                                    <span class="status-badge status-{{ 'active' if product[5] else 'inactive' }}">
-                                        {{ 'Active' if product[5] else 'Inactive' }}
+                                    <span class="status-badge status-{{ 'active' if product.is_active else 'inactive' }}">
+                                        {{ 'Active' if product.is_active else 'Inactive' }}
                                     </span>
                                 </td>
                                 <td>
-                                    <button class="btn-small btn-edit-product" data-product-id="{{ product[0] }}">
+                                    <button class="btn-small btn-edit-product" data-product-id="{{ product.id }}">
                                         <i class="fas fa-edit"></i> Edit
                                     </button>
-                                    <button class="btn-small btn-danger btn-delete-product" data-product-id="{{ product[0] }}">
+                                    <button class="btn-small btn-danger btn-delete-product" data-product-id="{{ product.id }}">
                                         <i class="fas fa-trash"></i> Delete
                                     </button>
-                                    <button class="btn-small btn-toggle-product" data-product-id="{{ product[0] }}" data-active="{{ product[5] }}">
-                                        <i class="fas fa-{{ 'eye-slash' if product[5] else 'eye' }}"></i>
-                                        {{ 'Disable' if product[5] else 'Enable' }}
+                                    <button class="btn-small btn-toggle-product" data-product-id="{{ product.id }}" data-active="{{ product.is_active }}">
+                                        <i class="fas fa-{{ 'eye-slash' if product.is_active else 'eye' }}"></i>
+                                        {{ 'Disable' if product.is_active else 'Enable' }}
                                     </button>
                                 </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- KEY TYPES TAB -->
+        <div id="keytypes-tab" class="tab-content">
+            <div class="card">
+                <h2><i class="fas fa-cog"></i> Key Types Management</h2>
+                
+                <button class="btn-primary" id="add-keytype-btn">
+                    <i class="fas fa-plus-circle"></i> Add New Key Type
+                </button>
+                
+                <!-- Add Key Type Form -->
+                <div id="add-keytype-form" style="display: none;" class="form-container">
+                    <h3>Add Custom Key Type</h3>
+                    
+                    <div class="form-group">
+                        <label>Type Name:</label>
+                        <input type="text" id="new-keytype-name" placeholder="e.g., mycustomkey" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Pattern:</label>
+                        <input type="text" id="new-keytype-pattern" placeholder="e.g., CUSTOM-{RANDOM6}" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Description:</label>
+                        <input type="text" id="new-keytype-desc" placeholder="Describe the key format">
+                    </div>
+                    
+                    <div class="flex gap-2">
+                        <button class="btn-primary" id="save-keytype">
+                            <i class="fas fa-save"></i> Save Key Type
+                        </button>
+                        <button class="btn-secondary" id="cancel-keytype">
+                            <i class="fas fa-times"></i> Cancel
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Key Types Table -->
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Type Name</th>
+                                <th>Pattern</th>
+                                <th>Description</th>
+                                <th>Created</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for key_type in key_types %}
+                            <tr>
+                                <td><strong>{{ key_type.type_name }}</strong></td>
+                                <td><code>{{ key_type.pattern }}</code></td>
+                                <td>{{ key_type.description }}</td>
+                                <td>{% if key_type.created_at %}{% if key_type.created_at is string %}{{ key_type.created_at[:10] }}{% else %}{{ key_type.created_at.strftime('%Y-%m-%d') }}{% endif %}{% else %}N/A{% endif %}</td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -326,32 +390,32 @@
             <input type="hidden" id="edit-product-id">
             
             <div class="form-group">
-                <label><i class="fas fa-tag"></i> Product Name:</label>
+                <label>Product Name:</label>
                 <input type="text" id="edit-product-name" required>
             </div>
             
             <div class="form-group">
-                <label><i class="fas fa-coins"></i> Credits per Day:</label>
+                <label>Credits per Day:</label>
                 <input type="number" step="0.5" id="edit-product-credits" required>
             </div>
             
             <div class="form-group">
-                <label><i class="fas fa-rupee-sign"></i> Price per Day (₹):</label>
+                <label>Price per Day (₹):</label>
                 <input type="number" step="1" id="edit-product-price" required>
             </div>
             
             <div class="form-group">
-                <label><i class="fas fa-key"></i> Key Type:</label>
+                <label>Key Type:</label>
                 <select id="edit-product-keytype">
-                    <option value="fluorite">🔑 Fluorite/Gbox (16 chars)</option>
-                    <option value="drip">🔢 Drip (10 digits)</option>
-                    <option value="hg">🎯 HG Cheat (HG-XXXXXX)</option>
-                    <option value="brmod">👥 BRMod (Username+Password)</option>
-                    <option value="lkteam">⚡ LKTEAM (LKTEAM-XXXXXX)</option>
-                    <option value="strict">🔒 Strict (STRICT-8 digits)</option>
-                    <option value="spotify">🎵 Spotify (Email+Password)</option>
-                    <option value="standard">📦 Standard (KEY-XXXX-XXXX)</option>
+                    {% for key_type in key_types %}
+                    <option value="{{ key_type.type_name }}">{{ key_type.type_name }}</option>
+                    {% endfor %}
                 </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Custom Pattern (optional):</label>
+                <input type="text" id="edit-product-custom-pattern" placeholder="e.g., MYKEY-{RANDOM8}">
             </div>
             
             <div class="flex gap-2">
@@ -373,7 +437,7 @@
             <input type="hidden" id="add-credits-username">
             
             <div class="form-group">
-                <label><i class="fas fa-coins"></i> Credits to Add:</label>
+                <label>Credits to Add:</label>
                 <input type="number" step="0.5" id="add-credits-amount" min="1" placeholder="Enter credits" required>
             </div>
             
@@ -388,25 +452,61 @@
         </div>
     </div>
 
+    <!-- NOTIFICATION MODAL -->
+    <div id="notification-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h3><i class="fas fa-bell"></i> Send Notification</h3>
+            
+            <div class="form-group">
+                <label>Title (Optional):</label>
+                <input type="text" id="notification-title" placeholder="e.g., Announcement, Update, Offer">
+            </div>
+            
+            <div class="form-group">
+                <label>Message:</label>
+                <textarea id="notification-message" rows="4" placeholder="Enter your message here..." required></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label>Send to:</label>
+                <select id="notification-target">
+                    <option value="all">📢 All Users</option>
+                    <option value="specific">🎯 Specific User</option>
+                </select>
+                <select id="user-list-select" style="display: none; margin-top: 10px;">
+                    <option value="">-- Select User --</option>
+                </select>
+            </div>
+            
+            <div class="flex gap-2">
+                <button class="btn-primary" id="send-notification-submit">
+                    <i class="fas fa-paper-plane"></i> Send
+                </button>
+                <button class="btn-secondary" id="close-notification-modal">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- SUPPORT SECTION -->
     <div class="support-section" style="margin-top: 2rem;">
         <h3><i class="fas fa-headset"></i> Quick Support</h3>
         <div class="support-grid">
-            <a href="{{ whatsapp_link }}" target="_blank" class="support-card whatsapp">
-                <i class="fab fa-whatsapp"></i>
-                <span>WhatsApp Support</span>
+            <a href="{{ telegram_support }}" target="_blank" class="support-card telegram">
+                <i class="fab fa-telegram"></i>
+                <span>Telegram Support</span>
                 <small>Click to chat with admin</small>
             </a>
-            <a href="{{ telegram_channel }}" target="_blank" class="support-card telegram">
-                <i class="fab fa-telegram"></i>
-                <span>Telegram Channel</span>
+            <a href="{{ whatsapp_channel }}" target="_blank" class="support-card whatsapp">
+                <i class="fab fa-whatsapp"></i>
+                <span>WhatsApp Channel</span>
                 <small>Join for updates</small>
             </a>
         </div>
     </div>
 
     <style>
-        /* Additional inline styles for badges */
         .badge {
             background: var(--accent-red);
             color: white;
@@ -415,371 +515,56 @@
             font-size: 0.7rem;
             margin-left: 0.5rem;
         }
-        
-        .btn-toggle-product {
-            background: var(--accent-yellow);
-            color: black;
+        .flex { display: flex; }
+        .gap-2 { gap: 1rem; }
+        .btn-cancel-binance:hover {
+            background: #e68900 !important;
         }
-        
-        .btn-toggle-product:hover {
-            background: #ff9900;
+        .btn-telegram-small {
+            background: #0088cc;
+            color: white;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.8rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: all 0.2s ease;
+            border: none;
+            cursor: pointer;
         }
-        
-        .flex {
-            display: flex;
+        .btn-telegram-small:hover {
+            background: #006699;
+            transform: translateY(-2px);
         }
-        
-        .gap-2 {
-            gap: 1rem;
-        }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-        
-        .stat-card {
-            background: linear-gradient(145deg, #1a1a1a, #000);
-            padding: 1.2rem;
-            border-radius: 12px;
-            border: 2px solid var(--accent-pink);
-            text-align: center;
-        }
-        
-        .stat-card h3 {
-            font-size: 0.9rem;
-            margin-bottom: 0.5rem;
-            color: var(--accent-pink);
-        }
-        
-        .stat-card h3 i {
-            margin-right: 0.3rem;
-        }
-        
-        .stat-value {
-            font-size: 1.8rem;
+        .btn-notification {
+            background: linear-gradient(145deg, #ff00ff, #cc00cc);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 40px;
+            border: none;
+            cursor: pointer;
             font-weight: bold;
-            color: var(--accent-green);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.8rem;
+            transition: all 0.3s ease;
         }
-        
-        @media (max-width: 768px) {
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .stat-value {
-                font-size: 1.4rem;
-            }
+        .btn-notification:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(255,0,255,0.5);
+        }
+        .support-card.whatsapp {
+            background: linear-gradient(145deg, #25D366, #128C7E);
+            color: white;
+        }
+        .support-card.whatsapp:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(37, 211, 102, 0.4);
         }
     </style>
 
     <script src="{{ url_for('static', filename='script.js') }}"></script>
-    <script>
-        // Additional admin functions
-        document.addEventListener('DOMContentLoaded', function() {
-            
-            // Toggle Product Status
-            document.querySelectorAll('.btn-toggle-product').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const productId = this.dataset.productId;
-                    const isActive = this.dataset.active === '1' ? 0 : 1;
-                    
-                    fetch('/admin/toggle_product', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ 
-                            product_id: productId, 
-                            is_active: isActive 
-                        })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            location.reload();
-                        } else {
-                            alert('Failed to toggle product');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        alert('An error occurred');
-                    });
-                });
-            });
-            
-            // Reject Payment
-            document.querySelectorAll('.btn-reject-payment').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    if (!confirm('Reject this payment?')) return;
-                    
-                    const paymentId = this.dataset.paymentId;
-                    
-                    fetch('/admin/reject_payment', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ payment_id: paymentId })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            alert('Payment rejected');
-                            location.reload();
-                        } else {
-                            alert('Failed to reject payment');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        alert('An error occurred');
-                    });
-                });
-            });
-            
-            // Tab switching
-            const tabs = document.querySelectorAll('.tab-btn');
-            const tabContents = document.querySelectorAll('.tab-content');
-            
-            tabs.forEach(tab => {
-                tab.addEventListener('click', function() {
-                    const tabName = this.dataset.tab;
-                    
-                    tabs.forEach(t => t.classList.remove('active'));
-                    tabContents.forEach(c => c.classList.remove('active'));
-                    
-                    this.classList.add('active');
-                    document.getElementById(tabName + '-tab').classList.add('active');
-                });
-            });
-            
-            // Add Product
-            const addProductBtn = document.getElementById('add-product-btn');
-            const addProductForm = document.getElementById('add-product-form');
-            const cancelProductBtn = document.getElementById('cancel-product');
-            
-            if (addProductBtn) {
-                addProductBtn.addEventListener('click', () => {
-                    addProductForm.style.display = 'block';
-                });
-            }
-            
-            if (cancelProductBtn) {
-                cancelProductBtn.addEventListener('click', () => {
-                    addProductForm.style.display = 'none';
-                });
-            }
-            
-            // Save Product
-            const saveProductBtn = document.getElementById('save-product');
-            if (saveProductBtn) {
-                saveProductBtn.addEventListener('click', function() {
-                    const name = document.getElementById('new-product-name').value;
-                    const credits = document.getElementById('new-product-credits').value;
-                    const price = document.getElementById('new-product-price').value;
-                    const keyType = document.getElementById('new-product-keytype').value;
-                    
-                    if (!name || !credits || !price) {
-                        alert('Please fill all fields');
-                        return;
-                    }
-                    
-                    fetch('/admin/add_product', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            name: name,
-                            credit_cost_per_day: credits,
-                            price_per_day: price,
-                            key_type: keyType
-                        })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            alert('Product added successfully');
-                            location.reload();
-                        } else {
-                            alert('Error: ' + (data.error || 'Failed to add product'));
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        alert('An error occurred');
-                    });
-                });
-            }
-            
-            // Edit Product
-            const editModal = document.getElementById('edit-product-modal');
-            const closeModal = document.getElementById('close-modal');
-            
-            document.querySelectorAll('.btn-edit-product').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const row = this.closest('tr');
-                    const cells = row.querySelectorAll('td');
-                    
-                    document.getElementById('edit-product-id').value = this.dataset.productId;
-                    document.getElementById('edit-product-name').value = cells[0].textContent.trim();
-                    document.getElementById('edit-product-credits').value = cells[1].textContent.trim();
-                    document.getElementById('edit-product-price').value = cells[2].textContent.replace('₹', '');
-                    
-                    const keyType = cells[3].textContent.trim();
-                    const select = document.getElementById('edit-product-keytype');
-                    for (let option of select.options) {
-                        if (option.value === keyType) {
-                            option.selected = true;
-                            break;
-                        }
-                    }
-                    
-                    editModal.style.display = 'flex';
-                });
-            });
-            
-            // Update Product
-            const updateBtn = document.getElementById('update-product');
-            if (updateBtn) {
-                updateBtn.addEventListener('click', function() {
-                    const productId = document.getElementById('edit-product-id').value;
-                    const name = document.getElementById('edit-product-name').value;
-                    const credits = document.getElementById('edit-product-credits').value;
-                    const price = document.getElementById('edit-product-price').value;
-                    const keyType = document.getElementById('edit-product-keytype').value;
-                    
-                    fetch('/admin/edit_product', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            product_id: productId,
-                            name: name,
-                            credit_cost_per_day: credits,
-                            price_per_day: price,
-                            key_type: keyType
-                        })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            alert('Product updated');
-                            location.reload();
-                        } else {
-                            alert('Update failed');
-                        }
-                    });
-                });
-            }
-            
-            if (closeModal) {
-                closeModal.addEventListener('click', () => {
-                    editModal.style.display = 'none';
-                });
-            }
-            
-            // Delete Product
-            document.querySelectorAll('.btn-delete-product').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    if (!confirm('Delete this product?')) return;
-                    
-                    fetch('/admin/delete_product', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ product_id: this.dataset.productId })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            location.reload();
-                        }
-                    });
-                });
-            });
-            
-            // Add Credits
-            const creditsModal = document.getElementById('add-credits-modal');
-            const closeCredits = document.getElementById('close-credits-modal');
-            
-            document.querySelectorAll('.btn-add-credits').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    document.getElementById('add-credits-username').value = this.dataset.username;
-                    creditsModal.style.display = 'flex';
-                });
-            });
-            
-            document.getElementById('confirm-add-credits').addEventListener('click', function() {
-                const username = document.getElementById('add-credits-username').value;
-                const credits = document.getElementById('add-credits-amount').value;
-                
-                if (!credits || credits < 1) {
-                    alert('Enter valid amount');
-                    return;
-                }
-                
-                fetch('/admin/add_credits', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username: username, credits: credits })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert('Credits added');
-                        location.reload();
-                    }
-                });
-            });
-            
-            if (closeCredits) {
-                closeCredits.addEventListener('click', () => {
-                    creditsModal.style.display = 'none';
-                });
-            }
-            
-            // Delete User
-            document.querySelectorAll('.btn-delete-user').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    if (!confirm('Delete this user?')) return;
-                    
-                    fetch('/admin/delete_user', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ username: this.dataset.username })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            location.reload();
-                        }
-                    });
-                });
-            });
-            
-            // Delete Key
-            document.querySelectorAll('.btn-delete-key').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    if (!confirm('Delete this key?')) return;
-                    
-                    fetch('/admin/delete_key', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ license_id: this.dataset.licenseId })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            location.reload();
-                        }
-                    });
-                });
-            });
-            
-            // Close modals on outside click
-            window.addEventListener('click', (e) => {
-                if (e.target.classList.contains('modal')) {
-                    e.target.style.display = 'none';
-                }
-            });
-        });
-    </script>
 </body>
 </html>
