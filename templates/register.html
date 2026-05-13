@@ -5,11 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register - Neon Dashboard</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body class="auth-body">
     <div class="auth-container">
         <img src="https://i.ibb.co/1GBn25c5/VID-20260310-172522-610-ezgif-com-video-to-gif-converter.gif" alt="Logo" class="logo">
         <h2>Create Account</h2>
+        
+        <!-- Discord Join Reminder -->
+        <div style="background: linear-gradient(145deg, #5865F2, #404EED); padding: 1rem; border-radius: 10px; margin-bottom: 1.5rem; text-align: center;">
+            <i class="fab fa-discord" style="font-size: 2rem; margin-right: 0.5rem;"></i>
+            <strong>Join our Discord first!</strong>
+            <p style="margin-top: 0.5rem; font-size: 0.9rem;">You must join our Discord server before registering</p>
+            <a href="{{ discord_invite }}" target="_blank" class="btn-small" style="background: white; color: #5865F2; margin-top: 0.5rem; display: inline-block;">
+                <i class="fab fa-discord"></i> Join Discord
+            </a>
+        </div>
         
         {% if error %}
         <div class="error-message">{{ error }}</div>
@@ -17,24 +28,47 @@
         
         <form method="POST" action="{{ url_for('register') }}">
             <div class="form-group">
-                <label for="username">Username</label>
+                <label for="username"><i class="fas fa-user"></i> Username</label>
                 <input type="text" id="username" name="username" required>
             </div>
             
             <div class="form-group">
-                <label for="password">Password</label>
+                <label for="discord_id"><i class="fab fa-discord"></i> Discord User ID</label>
+                <input type="text" id="discord_id" name="discord_id" placeholder="Enter your Discord User ID" required>
+                <small>Don't know your ID? <a href="https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID-" target="_blank" style="color: var(--accent-pink);">Click here</a></small>
+            </div>
+            
+            <div class="form-group">
+                <label for="password"><i class="fas fa-lock"></i> Password</label>
                 <input type="password" id="password" name="password" required>
             </div>
             
             <div class="form-group">
-                <label for="confirm_password">Confirm Password</label>
+                <label for="confirm_password"><i class="fas fa-lock"></i> Confirm Password</label>
                 <input type="password" id="confirm_password" name="confirm_password" required>
             </div>
             
-            <button type="submit" class="btn-primary">Register</button>
+            <button type="submit" class="btn-primary">
+                <i class="fas fa-user-plus"></i> Register
+            </button>
         </form>
         
         <p class="auth-link">Already have an account? <a href="{{ url_for('login') }}">Login here</a></p>
+        
+        <!-- Support Section -->
+        <div class="support-section" style="margin-top: 2rem;">
+            <h3><i class="fas fa-headset"></i> Need Help?</h3>
+            <div class="support-grid" style="grid-template-columns: 1fr 1fr;">
+                <a href="{{ telegram_support }}" target="_blank" class="support-card telegram">
+                    <i class="fab fa-telegram"></i>
+                    <span>Telegram Support</span>
+                </a>
+                <a href="{{ whatsapp_channel }}" target="_blank" class="support-card whatsapp">
+                    <i class="fab fa-whatsapp"></i>
+                    <span>WhatsApp Channel</span>
+                </a>
+            </div>
+        </div>
     </div>
 </body>
 </html>
