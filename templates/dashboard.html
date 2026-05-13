@@ -6,40 +6,18 @@
     <title>User Dashboard - Neon Dashboard</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        .top-banner-ad {
-            background: rgba(0,0,0,0.2);
-            border-radius: 12px;
-            margin-bottom: 1rem;
-            text-align: center;
-            overflow: hidden;
-        }
-        .top-banner-ad small {
-            display: block;
-            color: var(--text-secondary);
-            font-size: 0.7rem;
-            padding: 4px;
-            background: rgba(0,0,0,0.3);
-        }
-        .footer-links {
-            text-align: center;
-            padding: 1rem;
-            margin-top: 2rem;
-            color: var(--text-secondary);
-            font-size: 0.8rem;
-            border-top: 1px solid var(--border-color);
-        }
-        .footer-links a {
-            color: var(--accent-pink);
-            text-decoration: none;
-            margin: 0 0.5rem;
-        }
-        .footer-links a:hover {
-            color: var(--accent-green);
-        }
-    </style>
 </head>
 <body>
+    <!-- Top Right Small Ad -->
+    <div style="position: fixed; top: 10px; right: 10px; z-index: 9999;">
+        <div style="background: rgba(0,0,0,0.7); border-radius: 8px; padding: 5px 10px; border: 1px solid var(--accent-pink); backdrop-filter: blur(5px);">
+            <small style="color: #888; font-size: 9px;">Advertisement</small>
+            <div style="width: 120px; height: 60px; display: flex; align-items: center; justify-content: center; color: var(--text-secondary); font-size: 10px;">
+                <i class="fas fa-ad"></i> Ad Space
+            </div>
+        </div>
+    </div>
+
     <nav class="navbar">
         <div class="nav-container">
             <img src="https://i.ibb.co/1GBn25c5/VID-20260310-172522-610-ezgif-com-video-to-gif-converter.gif" alt="Logo" class="nav-logo">
@@ -54,16 +32,6 @@
             </a>
         </div>
     </nav>
-
-    <!-- Top Banner Ad Space (For AdSense) -->
-    <div style="text-align: center; margin: 10px auto; max-width: 728px; padding: 0 10px;">
-        <div class="top-banner-ad" style="background: rgba(0,0,0,0.2); border-radius: 10px; overflow: hidden;">
-            <small style="display: block; color: #888; font-size: 10px; padding: 2px;">Advertisement</small>
-            <div style="min-height: 90px; display: flex; align-items: center; justify-content: center; color: var(--text-secondary);">
-                <i class="fas fa-ad"></i> Ad Space
-            </div>
-        </div>
-    </div>
 
     <div class="container">
         <div class="dashboard-grid">
@@ -190,13 +158,13 @@
                                         <i class="fas fa-sync"></i> Reset HWID
                                     </button>
                                 </td>
-                             </tr>
+                            </tr>
                             {% else %}
                             <tr>
                                 <td colspan="7" style="text-align: center; color: var(--text-secondary);">
                                     No keys generated yet
                                 </td>
-                             </tr>
+                            </tr>
                             {% endfor %}
                         </tbody>
                     </table>
@@ -217,7 +185,7 @@
                                 <th>Date</th>
                                 <th>Status</th>
                                 <th>Reason (if rejected)</th>
-                             </tr>
+                            </tr>
                         </thead>
                         <tbody>
                             {% for payment in payments %}
@@ -259,13 +227,13 @@
                                     <span style="color: var(--accent-red);">Rejected by admin</span>
                                     {% endif %}
                                 </td>
-                             </tr>
+                            </tr>
                             {% else %}
                             <tr>
                                 <td colspan="7" style="text-align: center; color: var(--text-secondary);">
                                     No payment history found
                                 </td>
-                             </tr>
+                            </tr>
                             {% endfor %}
                         </tbody>
                     </table>
@@ -274,7 +242,7 @@
         </div>
     </div>
 
-    <!-- Support Section - Using Environment Variables -->
+    <!-- Support Section -->
     <div class="support-section" style="margin-top: 2rem; margin-bottom: 2rem;">
         <h3><i class="fas fa-headset"></i> Need Help?</h3>
         <div class="support-grid">
@@ -292,11 +260,10 @@
     </div>
 
     <!-- Footer -->
-    <div class="footer-links">
+    <div style="text-align: center; padding: 1rem; margin-top: 1rem; color: var(--text-secondary); font-size: 0.8rem; border-top: 1px solid var(--border-color);">
         <p>&copy; 2026 Neon Dashboard. All rights reserved.</p>
-        <a href="{{ url_for('privacy') }}">Privacy Policy</a> |
-        <a href="{{ url_for('terms') }}">Terms of Service</a> |
-        <a href="{{ telegram_support }}">Contact Us</a>
+        <a href="{{ url_for('privacy') }}" style="color: var(--accent-pink); text-decoration: none; margin: 0 0.5rem;">Privacy Policy</a>
+        <a href="{{ url_for('terms') }}" style="color: var(--accent-pink); text-decoration: none; margin: 0 0.5rem;">Terms of Service</a>
     </div>
 
     <script src="{{ url_for('static', filename='script.js') }}"></script>
