@@ -20,316 +20,50 @@
     <div class="container">
         <div class="payment-container">
             <div class="card">
-                <div class="manual-payment-badge">
-                    <i class="fas fa-hand-holding-usd"></i> MANUAL PAYMENT SYSTEM <i class="fas fa-clock"></i>
+                <h1 class="neon-text" style="text-align: center;">💰 Recharge Credits</h1>
+                <p style="text-align: center; color: var(--accent-green);">1 Rupee = {{ credit_rate }} Credits</p>
+                
+                <!-- Payment Method Selection -->
+                <div style="display: flex; gap: 1rem; margin: 2rem 0; justify-content: center; flex-wrap: wrap;">
+                    <a href="{{ url_for('upi_payment') }}" class="btn-primary" style="width: auto; padding: 1rem 3rem; background: var(--gradient-green);">
+                        <i class="fas fa-mobile-alt"></i> UPI Payment
+                    </a>
+                    <a href="{{ url_for('binance_payment') }}" class="btn-primary" style="width: auto; padding: 1rem 3rem; background: linear-gradient(145deg, #f0b90b, #d4a00a);">
+                        <i class="fab fa-bitcoin"></i> Binance Crypto
+                    </a>
                 </div>
                 
-                <h2>Recharge Credits</h2>
-                
-                <div class="upi-info">
-                    <p><i class="fas fa-qrcode"></i> Scan & Pay to:</p>
-                    <p class="upi-id"><strong>{{ upi_id }}</strong></p>
-                    <p class="rate-info">💰 ₹1 = {{ credit_rate }} Credits</p>
-                    <p class="min-info">⚠️ Minimum: ₹{{ min_recharge }}</p>
+                <!-- Info Box -->
+                <div style="text-align: center; padding: 2rem; background: rgba(0,0,0,0.3); border-radius: 15px;">
+                    <i class="fas fa-info-circle" style="font-size: 3rem; color: var(--accent-pink); margin-bottom: 1rem;"></i>
+                    <h3>Choose Your Payment Method</h3>
+                    <p style="margin-top: 1rem;">
+                        <strong>UPI:</strong> Manual approval (UTR required)<br>
+                        <strong>Binance:</strong> Auto credits on payment (USD rate: 1$ = 98₹)
+                    </p>
+                    <p style="margin-top: 1rem; color: var(--accent-yellow);">
+                        Minimum: ₹{{ min_recharge }}
+                    </p>
                 </div>
                 
-                {% if success %}
-                <div class="success-message">
-                    <i class="fas fa-check-circle"></i>
-                    <h3>✅ PAYMENT SUBMITTED!</h3>
-                    <p>{{ success }}</p>
-                    <div class="support-buttons">
-                        <a href="{{ whatsapp_link }}" target="_blank" class="btn-whatsapp">
-                            <i class="fab fa-whatsapp"></i> WhatsApp Support
+                <!-- Support Section -->
+                <div class="support-section" style="margin-top: 2rem;">
+                    <h3><i class="fas fa-headset"></i> Need Help?</h3>
+                    <div class="support-grid">
+                        <a href="{{ telegram_support }}" target="_blank" class="support-card telegram">
+                            <i class="fab fa-telegram"></i>
+                            <span>Telegram Support</span>
+                            <small>Click to chat</small>
                         </a>
-                        <a href="{{ telegram_channel }}" target="_blank" class="btn-telegram">
-                            <i class="fab fa-telegram"></i> Telegram Channel
+                        <a href="{{ whatsapp_channel }}" target="_blank" class="support-card whatsapp">
+                            <i class="fab fa-whatsapp"></i>
+                            <span>WhatsApp Channel</span>
+                            <small>Join for updates</small>
                         </a>
-                    </div>
-                    <p class="note">📢 Message on WhatsApp for quick approval!</p>
-                </div>
-                {% endif %}
-                
-                {% if error %}
-                <div class="error-message">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <h3>❌ ERROR</h3>
-                    <p>{{ error }}</p>
-                </div>
-                {% endif %}
-                
-                <div id="payment-section" {% if success %}style="display: none;"{% endif %}>
-                    <!-- Quick Amount Selector -->
-                    <div class="amount-buttons">
-                        <button class="amount-btn" data-amount="1000">₹1000</button>
-                        <button class="amount-btn" data-amount="2000">₹2000</button>
-                        <button class="amount-btn" data-amount="5000">₹5000</button>
-                        <button class="amount-btn" data-amount="10000">₹10000</button>
-                    </div>
-                    
-                    <!-- QR Code Display -->
-                    <div id="qr-container" class="qr-container">
-                        <h3><i class="fas fa-qrcode"></i> Scan to Pay</h3>
-                        <img id="qr-image" src="data:image/png;base64,{{ qr_code }}" alt="Payment QR Code">
-                        <p class="amount-display">Amount: ₹<span id="qr-amount">{{ min_recharge }}</span></p>
-                        <p class="credits-display-small">You will get: <span id="qr-credits">{{ min_recharge * credit_rate }}</span> Credits</p>
-                    </div>
-                    
-                    <!-- Payment Form -->
-                    <form method="POST" action="{{ url_for('payment') }}" id="payment-form">
-                        <div class="form-group">
-                            <label for="amount"><i class="fas fa-rupee-sign"></i> Enter Amount (₹)</label>
-                            <input type="number" id="amount" name="amount" step="1" min="{{ min_recharge }}" 
-                                   value="{{ min_recharge }}" required onchange="updateQR(this.value)">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="utr"><i class="fas fa-hashtag"></i> UTR Number (12 digits)</label>
-                            <input type="text" id="utr" name="utr" pattern="\d{12}" maxlength="12" required 
-                                   placeholder="Enter 12 digit UTR number">
-                            <small>Enter UTR from your payment app</small>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="screenshot"><i class="fas fa-camera"></i> Screenshot Link (Optional)</label>
-                            <input type="url" id="screenshot" name="screenshot" 
-                                   placeholder="Google Drive / Imgur link">
-                            <small>Share payment screenshot link for faster verification</small>
-                        </div>
-                        
-                        <button type="submit" class="btn-primary" id="submit-payment">
-                            <i class="fas fa-paper-plane"></i> Submit for Approval
-                        </button>
-                    </form>
-                    
-                    <!-- Support Section -->
-                    <div class="support-section">
-                        <h3><i class="fas fa-headset"></i> Need Help?</h3>
-                        <div class="support-grid">
-                            <a href="{{ whatsapp_link }}" target="_blank" class="support-card whatsapp">
-                                <i class="fab fa-whatsapp"></i>
-                                <span>WhatsApp Support</span>
-                                <small>Click to chat</small>
-                            </a>
-                            <a href="{{ telegram_channel }}" target="_blank" class="support-card telegram">
-                                <i class="fab fa-telegram"></i>
-                                <span>Telegram Channel</span>
-                                <small>Join for updates</small>
-                            </a>
-                        </div>
-                    </div>
-                    
-                    <!-- Instructions -->
-                    <div class="payment-info">
-                        <h4><i class="fas fa-info-circle"></i> How to Recharge:</h4>
-                        <ol>
-                            <li>Pay to <strong>{{ upi_id }}</strong> using any UPI app</li>
-                            <li>Enter the EXACT amount (minimum ₹{{ min_recharge }})</li>
-                            <li>Copy the 12-digit UTR from your payment app</li>
-                            <li>Fill the form above and submit</li>
-                            <li>Message on WhatsApp for quick approval</li>
-                            <li>Credits added after admin verification</li>
-                        </ol>
-                        <div class="warning-box">
-                            <i class="fas fa-exclamation-circle"></i>
-                            <p>UTR is mandatory for verification. Keep screenshot ready!</p>
-                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
-    <style>
-        .manual-payment-badge {
-            background: linear-gradient(145deg, #ffaa00, #ff8800);
-            color: black;
-            padding: 1rem;
-            border-radius: 40px;
-            text-align: center;
-            font-weight: bold;
-            font-size: 1.2rem;
-            margin-bottom: 1.5rem;
-            animation: glow 2s infinite;
-        }
-        
-        @keyframes glow {
-            0% { box-shadow: 0 0 10px #ffaa00; }
-            50% { box-shadow: 0 0 30px #ffaa00; }
-            100% { box-shadow: 0 0 10px #ffaa00; }
-        }
-        
-        .support-section {
-            margin: 2rem 0;
-            padding: 1.5rem;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 15px;
-            border: 1px solid var(--accent-pink);
-        }
-        
-        .support-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-        
-        .support-card {
-            padding: 1.2rem;
-            border-radius: 12px;
-            text-align: center;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            gap: 0.3rem;
-        }
-        
-        .support-card i {
-            font-size: 2rem;
-        }
-        
-        .support-card span {
-            font-weight: bold;
-        }
-        
-        .support-card small {
-            color: rgba(255, 255, 255, 0.7);
-        }
-        
-        .support-card.whatsapp {
-            background: #25D366;
-            color: white;
-        }
-        
-        .support-card.whatsapp:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(37, 211, 102, 0.4);
-        }
-        
-        .support-card.telegram {
-            background: #0088cc;
-            color: white;
-        }
-        
-        .support-card.telegram:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 136, 204, 0.4);
-        }
-        
-        .btn-whatsapp, .btn-telegram {
-            display: inline-block;
-            padding: 1rem 2rem;
-            border-radius: 10px;
-            text-decoration: none;
-            color: white;
-            font-weight: bold;
-            margin: 0.5rem;
-            transition: all 0.3s ease;
-        }
-        
-        .btn-whatsapp {
-            background: #25D366;
-        }
-        
-        .btn-whatsapp:hover {
-            background: #128C7E;
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(37, 211, 102, 0.3);
-        }
-        
-        .btn-telegram {
-            background: #0088cc;
-        }
-        
-        .btn-telegram:hover {
-            background: #006699;
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(0, 136, 204, 0.3);
-        }
-        
-        .upi-id {
-            font-size: 1.5rem;
-            color: var(--accent-green);
-            text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
-            padding: 0.5rem;
-            background: rgba(0, 0, 0, 0.5);
-            border-radius: 10px;
-            margin: 0.5rem 0;
-        }
-        
-        .min-info {
-            color: var(--accent-yellow);
-            font-weight: bold;
-        }
-        
-        .warning-box {
-            background: rgba(255, 68, 68, 0.2);
-            border-left: 4px solid var(--accent-red);
-            padding: 1rem;
-            margin-top: 1rem;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-        
-        .warning-box i {
-            color: var(--accent-red);
-            font-size: 1.5rem;
-        }
-        
-        @media (max-width: 768px) {
-            .support-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .upi-id {
-                font-size: 1.2rem;
-            }
-            
-            .btn-whatsapp, .btn-telegram {
-                display: block;
-                margin: 0.5rem 0;
-            }
-        }
-    </style>
-
-    <script>
-    function updateQR(amount) {
-        if (amount < {{ min_recharge }}) {
-            alert(`Minimum amount is ₹{{ min_recharge }}`);
-            return;
-        }
-        
-        fetch('/generate_payment_qr', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ amount: amount })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                document.getElementById('qr-image').src = `data:image/png;base64,${data.qr_code}`;
-                document.getElementById('qr-amount').textContent = data.amount;
-                document.getElementById('qr-credits').textContent = data.credits;
-            }
-        })
-        .catch(error => console.error('Error:', error));
-    }
-    
-    // Quick amount buttons
-    document.querySelectorAll('.amount-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const amount = this.dataset.amount;
-            document.getElementById('amount').value = amount;
-            
-            document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('selected'));
-            this.classList.add('selected');
-            
-            updateQR(amount);
-        });
-    });
-    </script>
 </body>
 </html>
