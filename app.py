@@ -1672,6 +1672,22 @@ def not_found_error(error):
                          whatsapp_channel=WHATSAPP_CHANNEL), 404
 
 # ============================================
+# PRIVACY & TERMS ROUTES
+# ============================================
+
+@app.route('/privacy')
+def privacy():
+    return render_template('privacy.html', 
+                         telegram_support=TELEGRAM_SUPPORT_LINK,
+                         whatsapp_channel=WHATSAPP_CHANNEL)
+
+@app.route('/terms')
+def terms():
+    return render_template('terms.html',
+                         telegram_support=TELEGRAM_SUPPORT_LINK,
+                         whatsapp_channel=WHATSAPP_CHANNEL)
+
+# ============================================
 # MAIN
 # ============================================
 
