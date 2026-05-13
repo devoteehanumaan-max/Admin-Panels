@@ -1697,6 +1697,10 @@ def about():
                          telegram_support=TELEGRAM_SUPPORT_LINK,
                          whatsapp_channel=WHATSAPP_CHANNEL)
 
+@app.route('/home')
+def home():
+    return render_template('index.html')
+
 # ============================================
 # MAIN
 # ============================================
