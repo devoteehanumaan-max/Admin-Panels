@@ -1712,9 +1712,15 @@ def about():
 def home():
     return render_template('index.html')
 
+# ============================================
+# PREMIUM ACCESS PANEL ROUTE
+# ============================================
+
 @app.route('/premium')
 def access_panel():
-    return render_template('premium.html')
+    return render_template('premium.html',
+                         telegram_support=TELEGRAM_SUPPORT_LINK,
+                         whatsapp_channel=WHATSAPP_CHANNEL)
     
 # ============================================
 # MAIN
