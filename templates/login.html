@@ -18,16 +18,18 @@
         
         <form method="POST" action="{{ url_for('login') }}">
             <div class="form-group">
-                <label for="username">Username</label>
-                <input type="text" id="username" name="username" required>
+                <label for="username"><i class="fas fa-user"></i> Username</label>
+                <input type="text" id="username" name="username" placeholder="Enter your username" required>
             </div>
             
             <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" required>
+                <label for="password"><i class="fas fa-lock"></i> Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required>
             </div>
             
-            <button type="submit" class="btn-primary">Login</button>
+            <button type="submit" class="btn-primary">
+                <i class="fas fa-sign-in-alt"></i> Login
+            </button>
         </form>
         
         <p class="auth-link">Don't have an account? <a href="{{ url_for('register') }}">Register here</a></p>
@@ -36,16 +38,92 @@
         <div class="support-section" style="margin-top: 2rem;">
             <h3><i class="fas fa-headset"></i> Need Help?</h3>
             <div class="support-grid" style="grid-template-columns: 1fr 1fr;">
-                <a href="{{ telegram_support }}" target="_blank" class="support-card telegram">
+                <a href="https://t.me/SMGrowMarthqofc" target="_blank" class="support-card telegram">
                     <i class="fab fa-telegram"></i>
                     <span>Telegram Support</span>
+                    <small>Click to chat with admin</small>
                 </a>
-                <a href="{{ whatsapp_channel }}" target="_blank" class="support-card whatsapp">
+                <a href="https://whatsapp.com/channel/0029Vb8933MC6ZvoqBiPVq2h" target="_blank" class="support-card whatsapp">
                     <i class="fab fa-whatsapp"></i>
                     <span>WhatsApp Channel</span>
+                    <small>Join for updates</small>
                 </a>
             </div>
         </div>
     </div>
+
+    <style>
+        .support-section {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            border: 1px solid var(--accent-pink);
+        }
+        
+        .support-section h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        
+        .support-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        .support-card {
+            padding: 1rem;
+            border-radius: 12px;
+            text-align: center;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .support-card i {
+            font-size: 2rem;
+        }
+        
+        .support-card span {
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        
+        .support-card small {
+            font-size: 0.7rem;
+            opacity: 0.8;
+        }
+        
+        .support-card.telegram {
+            background: linear-gradient(145deg, #0088cc, #006699);
+            color: white;
+        }
+        
+        .support-card.telegram:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 136, 204, 0.4);
+        }
+        
+        .support-card.whatsapp {
+            background: linear-gradient(145deg, #25D366, #128C7E);
+            color: white;
+        }
+        
+        .support-card.whatsapp:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(37, 211, 102, 0.4);
+        }
+        
+        @media (max-width: 480px) {
+            .support-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </body>
 </html>
