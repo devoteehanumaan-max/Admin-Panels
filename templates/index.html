@@ -2,13 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
   <title>Neon Dashboard Pro</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   <style>
     * {
       margin: 0;
@@ -23,8 +22,8 @@
       --pink: #ff00aa;
       --text: #ffffff;
       --muted: #b3b3b3;
-      --border: rgba(255,255,255,0.08);
-      --shadow: 0 0 30px rgba(0,255,204,0.2);
+      --border: rgba(255, 255, 255, 0.08);
+      --shadow: 0 0 30px rgba(0, 255, 204, 0.2);
     }
 
     body {
@@ -40,8 +39,8 @@
       width: 100%;
       height: 100%;
       background-image:
-        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
       background-size: 40px 40px;
       z-index: -1;
     }
@@ -55,7 +54,7 @@
       position: sticky;
       top: 0;
       backdrop-filter: blur(14px);
-      background: rgba(0,0,0,0.45);
+      background: rgba(0, 0, 0, 0.45);
       border-bottom: 1px solid var(--border);
       z-index: 999;
     }
@@ -113,7 +112,7 @@
     .btn-secondary:hover {
       background: var(--pink);
       color: #fff;
-      box-shadow: 0 0 25px rgba(255,0,170,0.35);
+      box-shadow: 0 0 25px rgba(255, 0, 170, 0.35);
     }
 
     .hero {
@@ -137,7 +136,7 @@
       color: var(--accent);
       text-shadow:
         0 0 15px var(--accent),
-        0 0 35px rgba(0,255,204,0.5);
+        0 0 35px rgba(0, 255, 204, 0.5);
       margin-bottom: 1rem;
     }
 
@@ -227,7 +226,7 @@
       position: absolute;
       width: 120px;
       height: 120px;
-      background: rgba(0,255,204,0.08);
+      background: rgba(0, 255, 204, 0.08);
       border-radius: 50%;
       top: -50px;
       right: -40px;
@@ -255,47 +254,7 @@
       line-height: 1.7;
     }
 
-    .pricing {
-      padding: 5rem 5%;
-    }
-
-    .pricing-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 2rem;
-    }
-
-    .price-card {
-      background: var(--card);
-      border-radius: 22px;
-      padding: 2.5rem;
-      border: 1px solid var(--border);
-      text-align: center;
-      transition: 0.3s ease;
-    }
-
-    .price-card:hover {
-      transform: scale(1.03);
-      border-color: var(--pink);
-      box-shadow: 0 0 30px rgba(255,0,170,0.25);
-    }
-
-    .price {
-      font-size: 3rem;
-      margin: 1rem 0;
-      color: var(--accent);
-      font-weight: bold;
-    }
-
-    .price-card ul {
-      list-style: none;
-      margin: 2rem 0;
-    }
-
-    .price-card li {
-      margin: 0.8rem 0;
-      color: var(--muted);
-    }
+    /* Pricing section completely removed as requested */
 
     .footer {
       text-align: center;
@@ -350,7 +309,7 @@
 
   <nav class="navbar">
     <div class="logo">
-      <img src="https://i.ibb.co/1GBn25c5/VID-20260310-172522-610-ezgif-com-video-to-gif-converter.gif" alt="logo">
+      <img src="https://i.ibb.co/1GBn25c5/VID-20260310-172522-610-ezgif-com-video-to-gif-converter.gif" alt="logo" />
       Neon Dashboard
     </div>
 
@@ -377,7 +336,8 @@
 
   <section class="stats">
     <div class="stat-card">
-      <h2>50K+</h2>
+      <!-- Updated to 10K+ as requested -->
+      <h2>10K+</h2>
       <p>Registered Users</p>
     </div>
 
@@ -430,47 +390,7 @@
     </div>
   </section>
 
-  <section class="pricing">
-    <div class="section-title">
-      <h2>Membership Plans</h2>
-      <p>Affordable pricing with premium performance.</p>
-    </div>
-
-    <div class="pricing-grid">
-      <div class="price-card">
-        <h3>Basic</h3>
-        <div class="price">₹299</div>
-        <ul>
-          <li>1 License Key</li>
-          <li>Basic Features</li>
-          <li>Email Support</li>
-        </ul>
-        <a href="#" class="btn btn-secondary">Choose Plan</a>
-      </div>
-
-      <div class="price-card">
-        <h3>Pro</h3>
-        <div class="price">₹799</div>
-        <ul>
-          <li>Unlimited Access</li>
-          <li>Priority Support</li>
-          <li>Premium Features</li>
-        </ul>
-        <a href="#" class="btn btn-primary">Go Pro</a>
-      </div>
-
-      <div class="price-card">
-        <h3>Elite</h3>
-        <div class="price">₹1499</div>
-        <ul>
-          <li>All Features Included</li>
-          <li>Private Access</li>
-          <li>VIP Support</li>
-        </ul>
-        <a href="#" class="btn btn-secondary">Join Elite</a>
-      </div>
-    </div>
-  </section>
+  <!-- Membership Plans section has been completely removed from here -->
 
   <footer class="footer">
     <p>© 2026 Neon Dashboard. All rights reserved.</p>
@@ -478,7 +398,7 @@
     <div>
       <a href="/privacy">Privacy Policy</a>
       <a href="/terms">Terms of Service</a>
-      <a href="https://t.me/laadlii79">Telegram</a>
+      <a href="https://t.me/laadli79">Telegram</a>
     </div>
   </footer>
 
