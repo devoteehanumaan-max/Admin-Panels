@@ -1,108 +1,486 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neon Dashboard - Premium Gaming Tools</title>
-    <meta name="monetag" content="253701c23e9fd2a9c523521bdeb15b71">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        .hero {
-            text-align: center;
-            padding: 4rem 2rem;
-            background: linear-gradient(145deg, #1a1a1a, #000);
-            border-radius: 20px;
-            margin-bottom: 2rem;
-        }
-        .features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-            margin: 3rem 0;
-        }
-        .feature-card {
-            background: rgba(0,0,0,0.5);
-            padding: 2rem;
-            border-radius: 15px;
-            text-align: center;
-            border: 1px solid var(--accent-pink);
-        }
-        .feature-card i {
-            font-size: 3rem;
-            color: var(--accent-green);
-            margin-bottom: 1rem;
-        }
-        .cta-buttons {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            margin-top: 2rem;
-        }
-        .btn-large {
-            padding: 1rem 2.5rem;
-            font-size: 1.2rem;
-        }
-        .footer {
-            text-align: center;
-            padding: 2rem;
-            margin-top: 3rem;
-            border-top: 1px solid var(--border-color);
-        }
-        .footer a {
-            color: var(--accent-pink);
-            text-decoration: none;
-            margin: 0 0.5rem;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Neon Dashboard Pro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #050505;
+      --card: rgba(15, 15, 15, 0.7);
+      --accent: #00ffcc;
+      --pink: #ff00aa;
+      --text: #ffffff;
+      --muted: #b3b3b3;
+      --border: rgba(255,255,255,0.08);
+      --shadow: 0 0 30px rgba(0,255,204,0.2);
+    }
+
+    body {
+      background: radial-gradient(circle at top, #111 0%, #050505 50%);
+      color: var(--text);
+      font-family: 'Poppins', sans-serif;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 40px 40px;
+      z-index: -1;
+    }
+
+    .navbar {
+      width: 100%;
+      padding: 1.2rem 5%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      backdrop-filter: blur(14px);
+      background: rgba(0,0,0,0.45);
+      border-bottom: 1px solid var(--border);
+      z-index: 999;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1.4rem;
+      font-weight: 700;
+      font-family: 'Orbitron', sans-serif;
+      color: var(--accent);
+      text-shadow: 0 0 10px var(--accent);
+    }
+
+    .logo img {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      border: 2px solid var(--accent);
+      object-fit: cover;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .btn {
+      padding: 0.85rem 1.8rem;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: 0.3s ease;
+      border: 1px solid transparent;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), #00bfff);
+      color: #000;
+      box-shadow: var(--shadow);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      filter: brightness(1.1);
+    }
+
+    .btn-secondary {
+      border: 1px solid var(--pink);
+      color: var(--pink);
+      background: transparent;
+    }
+
+    .btn-secondary:hover {
+      background: var(--pink);
+      color: #fff;
+      box-shadow: 0 0 25px rgba(255,0,170,0.35);
+    }
+
+    .hero {
+      min-height: 90vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 4rem 5%;
+      position: relative;
+    }
+
+    .hero-content {
+      max-width: 900px;
+      animation: fadeIn 1.2s ease;
+    }
+
+    .hero h1 {
+      font-size: 5rem;
+      font-family: 'Orbitron', sans-serif;
+      color: var(--accent);
+      text-shadow:
+        0 0 15px var(--accent),
+        0 0 35px rgba(0,255,204,0.5);
+      margin-bottom: 1rem;
+    }
+
+    .hero p {
+      color: var(--muted);
+      font-size: 1.2rem;
+      line-height: 1.8;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 2rem;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.5rem;
+      padding: 2rem 5%;
+      margin-top: -80px;
+    }
+
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 2rem;
+      border-radius: 18px;
+      text-align: center;
+      backdrop-filter: blur(10px);
+      transition: 0.3s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-6px);
+      border-color: var(--accent);
+      box-shadow: var(--shadow);
+    }
+
+    .stat-card h2 {
+      color: var(--accent);
+      font-size: 2.2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .features {
+      padding: 5rem 5%;
+    }
+
+    .section-title {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .section-title h2 {
+      font-size: 2.7rem;
+      font-family: 'Orbitron', sans-serif;
+      color: var(--text);
+    }
+
+    .section-title p {
+      color: var(--muted);
+      margin-top: 0.8rem;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 2rem;
+    }
+
+    .feature-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 2rem;
+      border-radius: 20px;
+      transition: 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      width: 120px;
+      height: 120px;
+      background: rgba(0,255,204,0.08);
+      border-radius: 50%;
+      top: -50px;
+      right: -40px;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-8px);
+      border-color: var(--accent);
+      box-shadow: var(--shadow);
+    }
+
+    .feature-card i {
+      font-size: 2.8rem;
+      color: var(--accent);
+      margin-bottom: 1rem;
+    }
+
+    .feature-card h3 {
+      margin-bottom: 1rem;
+      font-size: 1.4rem;
+    }
+
+    .feature-card p {
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .pricing {
+      padding: 5rem 5%;
+    }
+
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+    }
+
+    .price-card {
+      background: var(--card);
+      border-radius: 22px;
+      padding: 2.5rem;
+      border: 1px solid var(--border);
+      text-align: center;
+      transition: 0.3s ease;
+    }
+
+    .price-card:hover {
+      transform: scale(1.03);
+      border-color: var(--pink);
+      box-shadow: 0 0 30px rgba(255,0,170,0.25);
+    }
+
+    .price {
+      font-size: 3rem;
+      margin: 1rem 0;
+      color: var(--accent);
+      font-weight: bold;
+    }
+
+    .price-card ul {
+      list-style: none;
+      margin: 2rem 0;
+    }
+
+    .price-card li {
+      margin: 0.8rem 0;
+      color: var(--muted);
+    }
+
+    .footer {
+      text-align: center;
+      padding: 3rem 5%;
+      border-top: 1px solid var(--border);
+      margin-top: 4rem;
+    }
+
+    .footer p {
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+
+    .footer a {
+      color: var(--accent);
+      text-decoration: none;
+      margin: 0 0.8rem;
+    }
+
+    .footer a:hover {
+      color: var(--pink);
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media(max-width: 768px) {
+      .hero h1 {
+        font-size: 3rem;
+      }
+
+      .hero-buttons {
+        flex-direction: column;
+      }
+
+      .navbar {
+        flex-direction: column;
+        gap: 1rem;
+      }
+    }
+  </style>
 </head>
 <body>
-    <nav class="navbar">
-        <div class="nav-container">
-            <img src="https://i.ibb.co/1GBn25c5/VID-20260310-172522-610-ezgif-com-video-to-gif-converter.gif" alt="Logo" class="nav-logo">
-            <div class="nav-user">Welcome to Neon Dashboard</div>
-            <div>
-                <a href="/login" class="btn-logout" style="margin-right: 10px;">Login</a>
-                <a href="/register" class="btn-logout">Register</a>
-            </div>
-        </div>
-    </nav>
 
-    <div class="container">
-        <div class="hero">
-            <h1 class="neon-text">Neon Dashboard</h1>
-            <p>Premium Gaming Tools & License Keys</p>
-            <p>Get high-quality gaming tools at affordable prices</p>
-            <div class="cta-buttons">
-                <a href="/login" class="btn-primary btn-large">Login</a>
-                <a href="/register" class="btn-secondary btn-large">Register</a>
-            </div>
-        </div>
-
-        <div class="features">
-            <div class="feature-card">
-                <i class="fas fa-key"></i>
-                <h3>Instant Keys</h3>
-                <p>Get your license keys instantly after purchase</p>
-            </div>
-            <div class="feature-card">
-                <i class="fas fa-coins"></i>
-                <h3>Credit System</h3>
-                <p>Easy recharge with UPI or Binance</p>
-            </div>
-            <div class="feature-card">
-                <i class="fas fa-headset"></i>
-                <h3>24/7 Support</h3>
-                <p>Telegram support for all your queries</p>
-            </div>
-        </div>
+  <nav class="navbar">
+    <div class="logo">
+      <img src="https://i.ibb.co/1GBn25c5/VID-20260310-172522-610-ezgif-com-video-to-gif-converter.gif" alt="logo">
+      Neon Dashboard
     </div>
 
-    <div class="footer">
-        <p>&copy; 2026 Neon Dashboard. All rights reserved.</p>
-        <a href="/privacy">Privacy Policy</a> |
-        <a href="/terms">Terms of Service</a> |
-        <a href="https://t.me/laadlii79">Contact Us</a>
+    <div class="nav-links">
+      <a href="/login" class="btn btn-secondary">Login</a>
+      <a href="/register" class="btn btn-primary">Get Started</a>
     </div>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-content">
+      <h1>PREMIUM GAMING TOOLS</h1>
+      <p>
+        Neon Dashboard delivers blazing-fast gaming utilities, instant license keys,
+        secure authentication, and a futuristic experience built for serious gamers.
+      </p>
+
+      <div class="hero-buttons">
+        <a href="/register" class="btn btn-primary">Create Account</a>
+        <a href="/login" class="btn btn-secondary">Member Login</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="stats">
+    <div class="stat-card">
+      <h2>50K+</h2>
+      <p>Registered Users</p>
+    </div>
+
+    <div class="stat-card">
+      <h2>99.9%</h2>
+      <p>Server Uptime</p>
+    </div>
+
+    <div class="stat-card">
+      <h2>24/7</h2>
+      <p>Support Availability</p>
+    </div>
+
+    <div class="stat-card">
+      <h2>Instant</h2>
+      <p>License Delivery</p>
+    </div>
+  </section>
+
+  <section class="features">
+    <div class="section-title">
+      <h2>Why Choose Neon?</h2>
+      <p>Built with performance, security, and aesthetics in mind.</p>
+    </div>
+
+    <div class="feature-grid">
+      <div class="feature-card">
+        <i class="fas fa-bolt"></i>
+        <h3>Lightning Fast</h3>
+        <p>Optimized infrastructure ensures blazing-fast dashboard response times.</p>
+      </div>
+
+      <div class="feature-card">
+        <i class="fas fa-shield-halved"></i>
+        <h3>Secure Access</h3>
+        <p>Advanced authentication and encrypted sessions for maximum safety.</p>
+      </div>
+
+      <div class="feature-card">
+        <i class="fas fa-key"></i>
+        <h3>Instant License Keys</h3>
+        <p>Receive and manage your keys instantly without waiting queues.</p>
+      </div>
+
+      <div class="feature-card">
+        <i class="fas fa-headset"></i>
+        <h3>Dedicated Support</h3>
+        <p>24/7 Telegram assistance for technical help and account support.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="pricing">
+    <div class="section-title">
+      <h2>Membership Plans</h2>
+      <p>Affordable pricing with premium performance.</p>
+    </div>
+
+    <div class="pricing-grid">
+      <div class="price-card">
+        <h3>Basic</h3>
+        <div class="price">₹299</div>
+        <ul>
+          <li>1 License Key</li>
+          <li>Basic Features</li>
+          <li>Email Support</li>
+        </ul>
+        <a href="#" class="btn btn-secondary">Choose Plan</a>
+      </div>
+
+      <div class="price-card">
+        <h3>Pro</h3>
+        <div class="price">₹799</div>
+        <ul>
+          <li>Unlimited Access</li>
+          <li>Priority Support</li>
+          <li>Premium Features</li>
+        </ul>
+        <a href="#" class="btn btn-primary">Go Pro</a>
+      </div>
+
+      <div class="price-card">
+        <h3>Elite</h3>
+        <div class="price">₹1499</div>
+        <ul>
+          <li>All Features Included</li>
+          <li>Private Access</li>
+          <li>VIP Support</li>
+        </ul>
+        <a href="#" class="btn btn-secondary">Join Elite</a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <p>© 2026 Neon Dashboard. All rights reserved.</p>
+
+    <div>
+      <a href="/privacy">Privacy Policy</a>
+      <a href="/terms">Terms of Service</a>
+      <a href="https://t.me/laadlii79">Telegram</a>
+    </div>
+  </footer>
+
 </body>
 </html>
