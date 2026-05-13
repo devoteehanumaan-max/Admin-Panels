@@ -6,6 +6,39 @@
     <title>User Dashboard - Neon Dashboard</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Additional Dashboard Styles */
+        .top-banner-ad {
+            background: rgba(0,0,0,0.2);
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            text-align: center;
+            overflow: hidden;
+        }
+        .top-banner-ad small {
+            display: block;
+            color: var(--text-secondary);
+            font-size: 0.7rem;
+            padding: 4px;
+            background: rgba(0,0,0,0.3);
+        }
+        .footer-links {
+            text-align: center;
+            padding: 1rem;
+            margin-top: 2rem;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            border-top: 1px solid var(--border-color);
+        }
+        .footer-links a {
+            color: var(--accent-pink);
+            text-decoration: none;
+            margin: 0 0.5rem;
+        }
+        .footer-links a:hover {
+            color: var(--accent-green);
+        }
+    </style>
 </head>
 <body>
     <nav class="navbar">
@@ -22,6 +55,17 @@
             </a>
         </div>
     </nav>
+
+    <!-- Top Banner Ad Space (For AdSense) -->
+    <div style="text-align: center; margin: 10px auto; max-width: 728px; padding: 0 10px;">
+        <div class="top-banner-ad" style="background: rgba(0,0,0,0.2); border-radius: 10px; overflow: hidden;">
+            <small style="display: block; color: #888; font-size: 10px; padding: 2px;">Advertisement</small>
+            <!-- AdSense code yahan aayega -->
+            <div style="min-height: 90px; display: flex; align-items: center; justify-content: center; color: var(--text-secondary);">
+                <i class="fas fa-ad"></i> Ad Space
+            </div>
+        </div>
+    </div>
 
     <div class="container">
         <div class="dashboard-grid">
@@ -57,12 +101,12 @@
                         <label>Duration:</label>
                         <select id="days-select" class="days-dropdown">
                             <option value="1">1 day</option>
-                            <option value="3">3 days</option>
-                            <option value="7">7 days</option>
-                            <option value="15">15 days</option>
-                            <option value="30">30 days</option>
-                            <option value="60">60 days</option>
-                            <option value="90">90 days</option>
+                            <option value="3">3 days (Save 25%)</option>
+                            <option value="7">7 days (Save 30%)</option>
+                            <option value="15">15 days (Save 40%)</option>
+                            <option value="30">30 days (Save 50%)</option>
+                            <option value="60">60 days (Save 55%)</option>
+                            <option value="90">90 days (Save 60%)</option>
                         </select>
                     </div>
                 </div>
@@ -236,17 +280,25 @@
     <div class="support-section" style="margin-top: 2rem; margin-bottom: 2rem;">
         <h3><i class="fas fa-headset"></i> Need Help?</h3>
         <div class="support-grid">
-            <a href="{{ telegram_support }}" target="_blank" class="support-card telegram">
+            <a href="https://t.me/SMGrowMarthqofc" target="_blank" class="support-card telegram">
                 <i class="fab fa-telegram"></i>
                 <span>Telegram Support</span>
                 <small>Click to chat with admin</small>
             </a>
-            <a href="{{ whatsapp_channel }}" target="_blank" class="support-card whatsapp">
+            <a href="https://whatsapp.com/channel/0029Vb8933MC6ZvoqBiPVq2h" target="_blank" class="support-card whatsapp">
                 <i class="fab fa-whatsapp"></i>
                 <span>WhatsApp Channel</span>
                 <small>Join for updates</small>
             </a>
         </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer-links">
+        <p>&copy; 2026 Neon Dashboard. All rights reserved.</p>
+        <a href="{{ url_for('privacy') }}">Privacy Policy</a> |
+        <a href="{{ url_for('terms') }}">Terms of Service</a> |
+        <a href="https://t.me/SMGrowMarthqofc">Contact Us</a>
     </div>
 
     <script src="{{ url_for('static', filename='script.js') }}"></script>
