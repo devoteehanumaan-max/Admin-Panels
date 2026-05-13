@@ -5,83 +5,108 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Dashboard - Neon Dashboard</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
     <nav class="navbar">
         <div class="nav-container">
             <img src="https://i.ibb.co/1GBn25c5/VID-20260310-172522-610-ezgif-com-video-to-gif-converter.gif" alt="Logo" class="nav-logo">
-            <div class="nav-credits">Credits: {{ user[4] }}</div>
-            <div class="nav-user">{{ user[1] }}</div>
-            <a href="{{ url_for('logout') }}" class="btn-logout">Logout</a>
+            <div class="nav-credits">
+                <i class="fas fa-coins"></i> Credits: {{ user.credits }}
+            </div>
+            <div class="nav-user">
+                <i class="fas fa-user-circle"></i> {{ user.username }}
+            </div>
+            <a href="{{ url_for('logout') }}" class="btn-logout">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
         </div>
     </nav>
 
     <div class="container">
         <div class="dashboard-grid">
-            <!-- Credits Section -->
+            <!-- Credits Card -->
             <div class="card">
-                <h2>Your Credits</h2>
-                <div class="credits-display">{{ user[4] }}</div>
-                <a href="{{ url_for('payment') }}" class="btn-primary">Recharge Credits</a>
+                <h2><i class="fas fa-coins"></i> Your Credits</h2>
+                <div class="credits-display">{{ user.credits }}</div>
+                <a href="{{ url_for('payment_page') }}" class="btn-primary">
+                    <i class="fas fa-plus-circle"></i> Add Credits
+                </a>
             </div>
 
-            <!-- Generate Key Section -->
+            <!-- Generate Key Card -->
             <div class="card">
-                <h2>Generate New Key</h2>
+                <h2><i class="fas fa-key"></i> Generate Key</h2>
                 <div class="form-group">
-                    <label for="product-select">Select Product:</label>
+                    <label>Select Product:</label>
                     <select id="product-select" class="product-dropdown">
                         <option value="">Choose a product...</option>
                         {% for product in products %}
-                        <option value="{{ product[0] }}" 
-                                data-cost="{{ product[2] }}" 
-                                data-price="{{ product[3] }}"
-                                data-type="{{ product[4] }}">
-                            {{ product[1] }} - ₹{{ product[3] }}/day ({{ product[2] }} credits/day)
+                        <option value="{{ product.id }}" 
+                                data-cost="{{ product.credit_cost_per_day }}" 
+                                data-price="{{ product.price_per_day }}"
+                                data-type="{{ product.key_type }}">
+                            {{ product.name }} - {{ product.credit_cost_per_day }} credits/day
                         </option>
                         {% endfor %}
                     </select>
                 </div>
 
-                <!-- Days Selection Dropdown (Appears after product selection) -->
-                <div id="days-selection" style="display: none;" class="form-group">
-                    <label for="days-select">Select Duration:</label>
-                    <select id="days-select" class="days-dropdown">
-                        <option value="1">1 day</option>
-                        <option value="3">3 days</option>
-                        <option value="7">7 days</option>
-                        <option value="15">15 days</option>
-                        <option value="30">30 days</option>
-                        <option value="60">60 days</option>
-                        <option value="90">90 days</option>
-                    </select>
+                <div id="days-selection" style="display: none;">
+                    <div class="form-group">
+                        <label>Duration:</label>
+                        <select id="days-select" class="days-dropdown">
+                            <option value="1">1 day</option>
+                            <option value="3">3 days</option>
+                            <option value="7">7 days</option>
+                            <option value="15">15 days</option>
+                            <option value="30">30 days</option>
+                            <option value="60">60 days</option>
+                            <option value="90">90 days</option>
+                        </select>
+                    </div>
                 </div>
                 
                 <div id="product-details" class="product-details" style="display: none;">
                     <p>Credits per day: <span id="cost-per-day"></span></p>
-                    <p>Price per day: ₹<span id="price-per-day"></span></p>
                     <hr>
-                    <p><strong>Total Credits: <span id="total-credits" class="neon-text-green"></span></strong></p>
-                    <p><strong>Total Price: ₹<span id="total-price" class="neon-text-green"></span></strong></p>
-                    <button id="generate-key" class="btn-primary" disabled>Generate Key</button>
+                    <p><strong>Total Credits Needed: <span id="total-credits" class="neon-text-green"></span></strong></p>
+                    
+                    <div id="discount-info" style="margin-top: 15px; padding: 12px; background: rgba(255,255,255,0.08); border-radius: 10px; border-left: 3px solid var(--accent-yellow);">
+                        <p style="font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 5px;">
+                            <i class="fas fa-tag"></i> Original Price: <span id="original-price" style="color: var(--accent-yellow); font-weight: bold;">0</span> credits
+                        </p>
+                        <p style="font-size: 0.95rem; color: var(--text-secondary);">
+                            <i class="fas fa-gift" style="color: var(--accent-green);"></i> You Save: <span id="savings" style="color: var(--accent-green); font-weight: bold;">0</span> credits
+                        </p>
+                        <p style="font-size: 0.85rem; color: var(--accent-pink); margin-top: 8px;">
+                            ⚡ ULTRA DISCOUNT: Longer duration = Better savings!
+                        </p>
+                    </div>
+                    
+                    <button id="generate-key" class="btn-primary" disabled>
+                        <i class="fas fa-magic"></i> Generate Key
+                    </button>
                 </div>
                 
                 <div id="generated-key" class="generated-key" style="display: none;">
-                    <h3>Your Generated Key/Credentials:</h3>
+                    <h3>Your Key/Credentials:</h3>
                     <div class="key-display" style="white-space: pre-line;"></div>
                 </div>
             </div>
 
-            <!-- HWID Reset Options -->
+            <!-- HWID Reset Card -->
             <div class="card">
-                <h2>HWID Management</h2>
-                <button id="hwid-reset-all" class="btn-primary">Reset All HWID</button>
-                <p class="hwid-note">This will reset HWID for all your active licenses</p>
+                <h2><i class="fas fa-microchip"></i> HWID Management</h2>
+                <button id="hwid-reset-all" class="btn-primary">
+                    <i class="fas fa-sync-alt"></i> Reset All HWID
+                </button>
+                <p class="hwid-note">Resets HWID for all your active licenses</p>
             </div>
 
-            <!-- Your Keys Section -->
+            <!-- Your Keys Table -->
             <div class="card full-width">
-                <h2>Your Generated Keys</h2>
+                <h2><i class="fas fa-list"></i> Your Generated Keys</h2>
                 <div class="table-container">
                     <table>
                         <thead>
@@ -90,22 +115,44 @@
                                 <th>Product</th>
                                 <th>Days</th>
                                 <th>Credits Used</th>
-                                <th>Expiry Date</th>
+                                <th>Expiry</th>
                                 <th>Status</th>
-                                <th>Actions</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for license in licenses %}
                             <tr>
-                                <td class="key-cell">{{ license[1] }}</td>
-                                <td>{{ license[3] }}</td>
-                                <td>{{ license[4] }} days</td>
-                                <td>{{ license[5] }}</td>
-                                <td>{{ license[6] }}</td>
-                                <td><span class="status-badge status-{{ license[7] }}">{{ license[7] }}</span></td>
+                                <td class="key-cell">{{ license.key }}</td>
+                                <td>{{ license.product_name }}</td>
+                                <td>{{ license.days }} days</td>
+                                <td>{{ license.total_credits }}</td>
                                 <td>
-                                    <button class="btn-small btn-hwid-reset" data-license-id="{{ license[0] }}">Reset HWID</button>
+                                    {% if license.expiry_date %}
+                                        {% if license.expiry_date.strftime %}
+                                            {{ license.expiry_date.strftime('%Y-%m-%d %H:%M') }}
+                                        {% else %}
+                                            {{ license.expiry_date[:16] }}
+                                        {% endif %}
+                                    {% else %}
+                                        N/A
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="status-badge status-{{ license.status }}">
+                                        {{ license.status }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <button class="btn-small btn-hwid-reset" data-license-id="{{ license.id }}">
+                                        <i class="fas fa-sync"></i> Reset HWID
+                                    </button>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="7" style="text-align: center; color: var(--text-secondary);">
+                                    No keys generated yet
                                 </td>
                             </tr>
                             {% endfor %}
@@ -113,6 +160,92 @@
                     </table>
                 </div>
             </div>
+
+            <!-- Payment History -->
+            <div class="card full-width" style="margin-top: 1rem;">
+                <h2><i class="fas fa-credit-card"></i> Your Payment History</h2>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Method</th>
+                                <th>UTR/Order ID</th>
+                                <th>Amount</th>
+                                <th>Credits</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Reason (if rejected)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for payment in payments %}
+                            <tr>
+                                <td>
+                                    {% if payment.payment_method == 'binance' %}
+                                    <span class="key-type-badge" style="background: #f0b90b; color: black;">BINANCE</span>
+                                    {% else %}
+                                    <span class="key-type-badge">UPI</span>
+                                    {% endif %}
+                                </td>
+                                <td><code>{{ payment.utr or payment.order_id }}</code></td>
+                                <td>₹{{ payment.amount }}</td>
+                                <td>{{ payment.credits_added }}</td>
+                                <td>
+                                    {% if payment.date %}
+                                        {% if payment.date.strftime %}
+                                            {{ payment.date.strftime('%Y-%m-%d %H:%M') }}
+                                        {% else %}
+                                            {{ payment.date[:16] }}
+                                        {% endif %}
+                                    {% else %}
+                                        N/A
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if payment.status == 'approved' %}
+                                    <span class="status-badge status-active">APPROVED</span>
+                                    {% elif payment.status == 'rejected' %}
+                                    <span class="status-badge status-inactive">REJECTED</span>
+                                    {% else %}
+                                    <span class="status-badge status-pending">PENDING</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if payment.status == 'rejected' and payment.rejection_reason %}
+                                    <span style="color: var(--accent-red);">{{ payment.rejection_reason }}</span>
+                                    {% elif payment.status == 'rejected' %}
+                                    <span style="color: var(--accent-red);">Rejected by admin</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="7" style="text-align: center; color: var(--text-secondary);">
+                                    No payment history found
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Support Section -->
+    <div class="support-section" style="margin-top: 2rem; margin-bottom: 2rem;">
+        <h3><i class="fas fa-headset"></i> Need Help?</h3>
+        <div class="support-grid">
+            <a href="{{ telegram_support }}" target="_blank" class="support-card telegram">
+                <i class="fab fa-telegram"></i>
+                <span>Telegram Support</span>
+                <small>Click to chat with admin</small>
+            </a>
+            <a href="{{ whatsapp_channel }}" target="_blank" class="support-card whatsapp">
+                <i class="fab fa-whatsapp"></i>
+                <span>WhatsApp Channel</span>
+                <small>Join for updates</small>
+            </a>
         </div>
     </div>
 
