@@ -3,88 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Access All Panel - Neon Dashboard</title>
+    <title>Premium Access - Neon Dashboard</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         .premium-container {
-            max-width: 1200px;
-            margin: 2rem auto;
-            padding: 2rem;
+            min-height: 80vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
         }
-        .premium-header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-        .premium-header h1 {
-            color: var(--accent-pink);
-            font-size: 2.5rem;
-        }
-        .panel-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-top: 2rem;
-        }
-        .panel-card {
-            background: var(--gradient-dark);
-            border: 2px solid var(--accent-pink);
-            border-radius: 20px;
-            padding: 1.5rem;
-            text-align: center;
-            transition: all 0.3s ease;
-        }
-        .panel-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--accent-green);
-            box-shadow: 0 0 30px rgba(255,0,255,0.3);
-        }
-        .panel-card i {
-            font-size: 3rem;
-            color: var(--accent-green);
-            margin-bottom: 1rem;
-        }
-        .panel-card h3 {
-            color: var(--accent-pink);
-            margin-bottom: 1rem;
-        }
-        .panel-card p {
-            color: var(--text-secondary);
-            margin-bottom: 1.5rem;
-        }
-        .btn-panel {
-            display: inline-block;
-            padding: 0.8rem 1.5rem;
+        .btn-access-panel {
             background: linear-gradient(135deg, #ff00cc, #3333ff);
             color: white;
-            text-decoration: none;
-            border-radius: 10px;
+            padding: 25px 50px;
+            font-size: 2rem;
             font-weight: bold;
-            transition: all 0.3s ease;
-        }
-        .btn-panel:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 0 15px rgba(255,0,204,0.5);
-        }
-        .coming-soon {
-            opacity: 0.6;
-            filter: grayscale(0.3);
-        }
-        .badge-premium {
-            display: inline-block;
-            background: linear-gradient(135deg, #ff00cc, #3333ff);
-            padding: 0.2rem 0.8rem;
+            border: none;
             border-radius: 20px;
-            font-size: 0.7rem;
-            margin-bottom: 1rem;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 15px;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 30px rgba(255, 0, 204, 0.5);
+            margin: 2rem;
         }
-        .footer-links {
-            text-align: center;
-            padding: 1rem;
+        .btn-access-panel:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 50px rgba(255, 0, 204, 0.8);
+        }
+        .btn-access-panel i {
+            font-size: 2.5rem;
+        }
+        .back-btn {
             margin-top: 2rem;
-            color: var(--text-secondary);
-            font-size: 0.8rem;
-            border-top: 1px solid var(--border-color);
         }
     </style>
 </head>
@@ -98,113 +53,25 @@
             <div class="nav-user">
                 <i class="fas fa-user-circle"></i> {{ session.username }}
             </div>
-            <a href="{{ url_for('user_dashboard') }}" class="btn-logout">
-                <i class="fas fa-arrow-left"></i> Back to Dashboard
-            </a>
         </div>
     </nav>
 
     <div class="container">
         <div class="premium-container">
-            <div class="premium-header">
-                <span class="badge-premium"><i class="fas fa-crown"></i> PREMIUM ACCESS</span>
-                <h1>Access All Panels</h1>
-                <p>Unlock all premium features and tools with your credits</p>
-            </div>
-
-            <div class="panel-grid">
-                <!-- Panel 1 -->
-                <div class="panel-card">
-                    <i class="fas fa-chart-line"></i>
-                    <h3>Analytics Dashboard</h3>
-                    <p>View detailed analytics and insights about your account usage</p>
-                    <a href="#" class="btn-panel">
-                        <i class="fas fa-lock"></i> Coming Soon
-                    </a>
-                </div>
-
-                <!-- Panel 2 -->
-                <div class="panel-card">
-                    <i class="fas fa-tools"></i>
-                    <h3>Tools Hub</h3>
-                    <p>Access all premium tools and utilities in one place</p>
-                    <a href="#" class="btn-panel">
-                        <i class="fas fa-lock"></i> Coming Soon
-                    </a>
-                </div>
-
-                <!-- Panel 3 -->
-                <div class="panel-card">
-                    <i class="fas fa-database"></i>
-                    <h3>Data Export</h3>
-                    <p>Export your license and payment data in multiple formats</p>
-                    <a href="#" class="btn-panel">
-                        <i class="fas fa-lock"></i> Coming Soon
-                    </a>
-                </div>
-
-                <!-- Panel 4 -->
-                <div class="panel-card">
-                    <i class="fas fa-headset"></i>
-                    <h3>Priority Support</h3>
-                    <p>Get priority support with faster response times</p>
-                    <a href="{{ telegram_support }}" target="_blank" class="btn-panel">
-                        <i class="fab fa-telegram"></i> Contact Support
-                    </a>
-                </div>
-
-                <!-- Panel 5 -->
-                <div class="panel-card">
-                    <i class="fas fa-gift"></i>
-                    <h3>Exclusive Offers</h3>
-                    <p>Get exclusive discounts and early access to new products</p>
-                    <a href="#" class="btn-panel">
-                        <i class="fas fa-lock"></i> Coming Soon
-                    </a>
-                </div>
-
-                <!-- Panel 6 -->
-                <div class="panel-card">
-                    <i class="fas fa-robot"></i>
-                    <h3>Automation Tools</h3>
-                    <p>Automate your license management and renewals</p>
-                    <a href="#" class="btn-panel">
-                        <i class="fas fa-lock"></i> Coming Soon
-                    </a>
-                </div>
-            </div>
-
-            <!-- Info Box -->
-            <div style="margin-top: 3rem; padding: 1.5rem; background: rgba(255,0,255,0.1); border-radius: 15px; text-align: center;">
-                <i class="fas fa-info-circle" style="font-size: 2rem; color: var(--accent-pink);"></i>
-                <p style="margin-top: 1rem;">More panels and features are being added regularly. Stay tuned for updates!</p>
-                <p>Follow our <a href="{{ whatsapp_channel }}" target="_blank" style="color: var(--accent-green);">WhatsApp Channel</a> for latest updates</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Support Section -->
-    <div class="support-section" style="margin-top: 2rem; margin-bottom: 2rem;">
-        <h3><i class="fas fa-headset"></i> Need Help?</h3>
-        <div class="support-grid">
-            <a href="{{ telegram_support }}" target="_blank" class="support-card telegram">
+            <!-- Button Redirects to Telegram Bot -->
+            <a href="https://t.me/StoreUpdateBot" target="_blank" class="btn-access-panel">
                 <i class="fab fa-telegram"></i>
-                <span>Telegram Support</span>
-                <small>Click to chat with admin</small>
+                Access Store Bot
+                <i class="fas fa-external-link-alt"></i>
             </a>
-            <a href="{{ whatsapp_channel }}" target="_blank" class="support-card whatsapp">
-                <i class="fab fa-whatsapp"></i>
-                <span>WhatsApp Channel</span>
-                <small>Join for updates</small>
-            </a>
+            
+            <!-- Back to Dashboard Button -->
+            <div class="back-btn">
+                <a href="{{ url_for('user_dashboard') }}" class="btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to Dashboard
+                </a>
+            </div>
         </div>
-    </div>
-
-    <!-- Footer Links -->
-    <div class="footer-links">
-        <p>&copy; 2026 Neon Dashboard. All rights reserved.</p>
-        <a href="{{ url_for('privacy') }}">Privacy Policy</a> |
-        <a href="{{ url_for('terms') }}">Terms of Service</a>
     </div>
 </body>
 </html>
