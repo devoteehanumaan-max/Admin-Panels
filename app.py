@@ -1712,18 +1712,9 @@ def about():
 def home():
     return render_template('index.html')
 
-@app.route('/access-panel')
+@app.route('/premium')
 def access_panel():
-
-    if 'user_id' not in session:
-        return redirect(url_for('login'))
-
-    user = get_user_by_id(session['user_id'])
-
-    return render_template(
-        'access_panel.html',
-        user=user
-    )
+    return render_template('premium.html')
     
 # ============================================
 # MAIN
