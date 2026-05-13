@@ -1,570 +1,647 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Neon Dashboard</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Neon Dashboard | Admin Panel</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <style>
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #060606;
+      --card: rgba(17,17,17,0.75);
+      --accent: #00ffd5;
+      --pink: #ff0099;
+      --blue: #00bfff;
+      --green: #00ff88;
+      --red: #ff4d6d;
+      --text: #ffffff;
+      --muted: #a9a9a9;
+      --border: rgba(255,255,255,0.08);
+      --shadow: 0 0 30px rgba(0,255,213,0.18);
+    }
+
+    body {
+      background:
+        radial-gradient(circle at top left, rgba(0,255,213,0.08), transparent 30%),
+        radial-gradient(circle at bottom right, rgba(255,0,153,0.08), transparent 30%),
+        #060606;
+      color: var(--text);
+      font-family: 'Poppins', sans-serif;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 40px 40px;
+      z-index: -1;
+    }
+
+    .navbar {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 4%;
+      background: rgba(0,0,0,0.45);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 999;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: 'Orbitron', sans-serif;
+      color: var(--accent);
+      font-size: 1.3rem;
+      text-shadow: 0 0 12px var(--accent);
+    }
+
+    .logo img {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      border: 2px solid var(--accent);
+      object-fit: cover;
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .admin-tag {
+      padding: 0.8rem 1.2rem;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .btn {
+      border: none;
+      outline: none;
+      cursor: pointer;
+      padding: 0.9rem 1.5rem;
+      border-radius: 14px;
+      font-weight: 600;
+      transition: 0.3s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--blue));
+      color: black;
+      box-shadow: var(--shadow);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-3px);
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, #ff416c, #ff4b2b);
+      color: white;
+    }
+
+    .btn-danger:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 0 25px rgba(255,75,43,0.3);
+    }
+
+    .container {
+      padding: 2rem 4%;
+    }
+
+    .hero {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 2rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .hero-text h1 {
+      font-size: 3rem;
+      font-family: 'Orbitron', sans-serif;
+      color: var(--accent);
+      text-shadow: 0 0 20px rgba(0,255,213,0.4);
+    }
+
+    .hero-text p {
+      margin-top: 0.8rem;
+      color: var(--muted);
+      max-width: 650px;
+      line-height: 1.8;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.5rem;
+      margin: 2rem 0 3rem;
+    }
+
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 2rem;
+      transition: 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: rgba(0,255,213,0.08);
+      top: -40px;
+      right: -40px;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-8px);
+      border-color: var(--accent);
+      box-shadow: var(--shadow);
+    }
+
+    .stat-card i {
+      font-size: 2.2rem;
+      color: var(--accent);
+      margin-bottom: 1rem;
+    }
+
+    .stat-card h2 {
+      font-size: 2.6rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-card p {
+      color: var(--muted);
+    }
+
+    .tabs {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      background: rgba(255,255,255,0.04);
+      color: white;
+      border: 1px solid var(--border);
+      padding: 0.9rem 1.5rem;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: 0.3s ease;
+      font-weight: 600;
+    }
+
+    .tab-btn.active,
+    .tab-btn:hover {
+      background: linear-gradient(135deg, var(--accent), var(--blue));
+      color: black;
+      border-color: transparent;
+      box-shadow: var(--shadow);
+    }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      backdrop-filter: blur(14px);
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .panel-header h2 {
+      font-size: 1.8rem;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .table-container {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 900px;
+    }
+
+    thead {
+      background: rgba(255,255,255,0.04);
+    }
+
+    th, td {
+      padding: 1rem;
+      text-align: left;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    th {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    tbody tr {
+      transition: 0.25s ease;
+    }
+
+    tbody tr:hover {
+      background: rgba(255,255,255,0.03);
+    }
+
+    .badge {
+      padding: 0.45rem 0.9rem;
+      border-radius: 30px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .badge-green {
+      background: rgba(0,255,136,0.12);
+      color: var(--green);
+      border: 1px solid rgba(0,255,136,0.25);
+    }
+
+    .badge-red {
+      background: rgba(255,77,109,0.12);
+      color: var(--red);
+      border: 1px solid rgba(255,77,109,0.25);
+    }
+
+    .badge-blue {
+      background: rgba(0,191,255,0.12);
+      color: var(--blue);
+      border: 1px solid rgba(0,191,255,0.25);
+    }
+
+    .action-group {
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+
+    .mini-btn {
+      padding: 0.6rem 1rem;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: 0.25s ease;
+    }
+
+    .mini-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .mini-blue {
+      background: rgba(0,191,255,0.15);
+      color: var(--blue);
+      border: 1px solid rgba(0,191,255,0.3);
+    }
+
+    .mini-red {
+      background: rgba(255,77,109,0.15);
+      color: var(--red);
+      border: 1px solid rgba(255,77,109,0.3);
+    }
+
+    .mini-green {
+      background: rgba(0,255,136,0.15);
+      color: var(--green);
+      border: 1px solid rgba(0,255,136,0.3);
+    }
+
+    .support-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+
+    .support-card {
+      padding: 2rem;
+      border-radius: 22px;
+      text-decoration: none;
+      color: white;
+      transition: 0.3s ease;
+      border: 1px solid var(--border);
+    }
+
+    .support-card:hover {
+      transform: translateY(-6px);
+    }
+
+    .telegram {
+      background: linear-gradient(135deg, #0088cc, #005577);
+    }
+
+    .whatsapp {
+      background: linear-gradient(135deg, #25D366, #128C7E);
+    }
+
+    .support-card i {
+      font-size: 2.3rem;
+      margin-bottom: 1rem;
+    }
+
+    .support-card h3 {
+      margin-bottom: 0.5rem;
+    }
+
+    .support-card p {
+      opacity: 0.85;
+    }
+
+    .footer {
+      margin-top: 3rem;
+      border-top: 1px solid var(--border);
+      padding: 2rem;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    @media(max-width: 768px) {
+
+      .hero {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .hero-text h1 {
+        font-size: 2.3rem;
+      }
+
+      .navbar {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .nav-right {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+    }
+
+  </style>
 </head>
 <body>
-    <nav class="navbar">
-        <div class="nav-container">
-            <img src="https://i.ibb.co/1GBn25c5/VID-20260310-172522-610-ezgif-com-video-to-gif-converter.gif" alt="Logo" class="nav-logo">
-            <div class="nav-user">👑 Admin: {{ session.username }}</div>
-            <button id="send-notification-btn" class="btn-notification">
-                <i class="fas fa-bell"></i> Send Notification
-            </button>
-            <a href="{{ url_for('logout') }}" class="btn-logout">
-                <i class="fas fa-sign-out-alt"></i> Logout
-            </a>
-        </div>
-    </nav>
 
-    <div class="container">
-        <!-- Stats Cards -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <h3><i class="fas fa-users"></i> Total Users</h3>
-                <div class="stat-value">{{ total_users }}</div>
-            </div>
-            <div class="stat-card">
-                <h3><i class="fas fa-rupee-sign"></i> Total Revenue</h3>
-                <div class="stat-value">₹{{ total_revenue }}</div>
-            </div>
-            <div class="stat-card">
-                <h3><i class="fas fa-coins"></i> Credits Sold</h3>
-                <div class="stat-value">{{ total_credits_sold }}</div>
-            </div>
-            <div class="stat-card">
-                <h3><i class="fas fa-clock"></i> Pending</h3>
-                <div class="stat-value">{{ pending_payments }}</div>
-            </div>
-            <div class="stat-card">
-                <h3><i class="fas fa-key"></i> Active Keys</h3>
-                <div class="stat-value">{{ active_keys }}</div>
-            </div>
-        </div>
+  <nav class="navbar">
 
-        <!-- Dashboard Tabs -->
-        <div class="dashboard-tabs">
-            <button class="tab-btn active" data-tab="users">
-                <i class="fas fa-users"></i> Users
-            </button>
-            <button class="tab-btn" data-tab="payments">
-                <i class="fas fa-credit-card"></i> Payments
-                {% if pending_payments > 0 %}
-                <span class="badge">{{ pending_payments }}</span>
+    <div class="logo">
+      <img src="https://i.ibb.co/1GBn25c5/VID-20260310-172522-610-ezgif-com-video-to-gif-converter.gif" alt="logo">
+      Neon Dashboard
+    </div>
+
+    <div class="nav-right">
+      <div class="admin-tag">
+        👑 Admin: {{ session.username }}
+      </div>
+
+      <button class="btn btn-primary">
+        <i class="fas fa-bell"></i>
+        Send Notification
+      </button>
+
+      <a href="{{ url_for('logout') }}" class="btn btn-danger">
+        <i class="fas fa-sign-out-alt"></i>
+        Logout
+      </a>
+    </div>
+
+  </nav>
+
+  <div class="container">
+
+    <section class="hero">
+
+      <div class="hero-text">
+        <h1>ADMIN CONTROL CENTER</h1>
+        <p>
+          Monitor users, payments, licenses, products, revenue and notifications from one futuristic dashboard.
+          Because apparently admins enjoy staring at glowing rectangles for hours.
+        </p>
+      </div>
+
+    </section>
+
+    <section class="stats-grid">
+
+      <div class="stat-card">
+        <i class="fas fa-users"></i>
+        <h2>{{ total_users }}</h2>
+        <p>Total Users</p>
+      </div>
+
+      <div class="stat-card">
+        <i class="fas fa-rupee-sign"></i>
+        <h2>₹{{ total_revenue }}</h2>
+        <p>Total Revenue</p>
+      </div>
+
+      <div class="stat-card">
+        <i class="fas fa-key"></i>
+        <h2>{{ active_keys }}</h2>
+        <p>Active Licenses</p>
+      </div>
+
+      <div class="stat-card">
+        <i class="fas fa-clock"></i>
+        <h2>{{ pending_payments }}</h2>
+        <p>Pending Payments</p>
+      </div>
+
+    </section>
+
+    <section class="tabs">
+      <button class="tab-btn active">Users</button>
+      <button class="tab-btn">Payments</button>
+      <button class="tab-btn">Licenses</button>
+      <button class="tab-btn">Products</button>
+      <button class="tab-btn">Key Types</button>
+    </section>
+
+    <section class="panel">
+
+      <div class="panel-header">
+        <h2>
+          <i class="fas fa-users"></i>
+          User Management
+        </h2>
+
+        <button class="btn btn-primary">
+          <i class="fas fa-user-plus"></i>
+          Add User
+        </button>
+      </div>
+
+      <div class="table-container">
+
+        <table>
+
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Credits</th>
+              <th>Recharge</th>
+              <th>Status</th>
+              <th>Joined</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+
+          <tbody>
+
+            {% for user in users %}
+
+            <tr>
+
+              <td>
+                <strong>{{ user.username }}</strong>
+              </td>
+
+              <td>
+                <span class="badge badge-green">
+                  <i class="fas fa-coins"></i>
+                  {{ user.credits }}
+                </span>
+              </td>
+
+              <td>
+                ₹{{ user.total_recharged or 0 }}
+              </td>
+
+              <td>
+                <span class="badge badge-blue">
+                  Active
+                </span>
+              </td>
+
+              <td>
+                {% if user.created_at %}
+                {{ user.created_at[:10] if user.created_at is string else user.created_at.strftime('%Y-%m-%d') }}
+                {% else %}
+                N/A
                 {% endif %}
-            </button>
-            <button class="tab-btn" data-tab="licenses">
-                <i class="fas fa-key"></i> Licenses
-            </button>
-            <button class="tab-btn" data-tab="products">
-                <i class="fas fa-box"></i> Products
-            </button>
-            <button class="tab-btn" data-tab="keytypes">
-                <i class="fas fa-cog"></i> Key Types
-            </button>
-        </div>
+              </td>
 
-        <!-- USERS TAB -->
-        <div id="users-tab" class="tab-content active">
-            <div class="card">
-                <h2><i class="fas fa-user-cog"></i> Manage Users</h2>
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Username</th>
-                                <th>Credits</th>
-                                <th>Total Recharged</th>
-                                <th>Joined</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for user in users %}
-                            <tr>
-                                <td><i class="fas fa-user-circle"></i> <strong>{{ user.username }}</strong></td>
-                                <td><span class="status-badge status-active"><i class="fas fa-coins"></i> {{ user.credits }}</span></td>
-                                <td>₹{{ user.total_recharged or 0 }}</td>
-                                <td>{% if user.created_at %}{% if user.created_at is string %}{{ user.created_at[:10] }}{% else %}{{ user.created_at.strftime('%Y-%m-%d') }}{% endif %}{% else %}N/A{% endif %}</td>
-                                <td>
-                                    <button class="btn-small btn-add-credits" data-username="{{ user.username }}">
-                                        <i class="fas fa-plus-circle"></i> Add Credits
-                                    </button>
-                                    <button class="btn-small btn-danger btn-delete-user" data-username="{{ user.username }}">
-                                        <i class="fas fa-trash"></i> Delete
-                                    </button>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+              <td>
 
-        <!-- PAYMENTS TAB -->
-        <div id="payments-tab" class="tab-content">
-            <div class="card">
-                <h2><i class="fas fa-credit-card"></i> Payment Requests</h2>
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Method</th>
-                                <th>User</th>
-                                <th>UTR/Order</th>
-                                <th>Amount</th>
-                                <th>Credits</th>
-                                <th>Date</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for payment in payments %}
-                            <tr>
-                                <td>
-                                    {% if payment.payment_method == 'binance' %}
-                                    <span class="key-type-badge" style="background: #f0b90b; color: black;">BINANCE</span>
-                                    {% else %}
-                                    <span class="key-type-badge">UPI</span>
-                                    {% endif %}
-                                </td>
-                                <td>{{ payment.username }}</td>
-                                <td><code>{{ payment.utr or payment.order_id }}</code></td>
-                                <td>₹{{ payment.amount }}</td>
-                                <td>{{ payment.credits_added }}</td>
-                                <td>{% if payment.date %}{% if payment.date is string %}{{ payment.date[:16] }}{% else %}{{ payment.date.strftime('%Y-%m-%d %H:%M') }}{% endif %}{% else %}N/A{% endif %}</td>
-                                <td><span class="status-badge status-{{ payment.status }}">{{ payment.status }}</span></td>
-                                <td>
-                                    {% if payment.status == 'pending' %}
-                                        {% if payment.payment_method == 'upi' %}
-                                        <button class="btn-small btn-approve-payment" data-payment-id="{{ payment.id }}">
-                                            <i class="fas fa-check-circle"></i> Approve
-                                        </button>
-                                        <button class="btn-small btn-danger btn-reject-payment" data-payment-id="{{ payment.id }}">
-                                            <i class="fas fa-times-circle"></i> Reject
-                                        </button>
-                                        {% elif payment.payment_method == 'binance' %}
-                                        <button class="btn-small btn-danger btn-reject-payment" data-payment-id="{{ payment.id }}">
-                                            <i class="fas fa-times-circle"></i> Reject
-                                        </button>
-                                        <button class="btn-small btn-cancel-binance" data-order-id="{{ payment.order_id }}" style="background: #ff9800; color: white;">
-                                            <i class="fas fa-ban"></i> Cancel
-                                        </button>
-                                        {% endif %}
-                                    {% elif payment.status == 'approved' %}
-                                        <span class="status-badge status-active">Approved</span>
-                                        {% if payment.approved_by %}<br><small>by {{ payment.approved_by }}</small>{% endif %}
-                                    {% elif payment.status == 'rejected' %}
-                                        <span class="status-badge status-inactive">Rejected</span>
-                                        {% if payment.rejection_reason %}<br><small style="color: var(--accent-red);">{{ payment.rejection_reason }}</small>{% endif %}
-                                    {% endif %}
-                                </td>
-                            </tr>
-                            {% else %}
-                            <tr>
-                                <td colspan="8" style="text-align: center; color: var(--text-secondary);">
-                                    No payment requests found
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+                <div class="action-group">
 
-        <!-- LICENSES TAB -->
-        <div id="licenses-tab" class="tab-content">
-            <div class="card">
-                <h2><i class="fas fa-key"></i> All Generated Keys</h2>
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Key/Credentials</th>
-                                <th>User</th>
-                                <th>Product</th>
-                                <th>Days</th>
-                                <th>Credits</th>
-                                <th>Expiry</th>
-                                <th>Status</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for license in licenses %}
-                            <tr>
-                                <td class="key-cell">{{ license.key }}</td>
-                                <td>{{ license.username }}</td>
-                                <td>{{ license.product_name }}</td>
-                                <td>{{ license.days }} days</td>
-                                <td>{{ license.total_credits }}</td>
-                                <td>{% if license.expiry_date %}{% if license.expiry_date is string %}{{ license.expiry_date[:16] }}{% else %}{{ license.expiry_date.strftime('%Y-%m-%d %H:%M') }}{% endif %}{% else %}N/A{% endif %}</td>
-                                <td><span class="status-badge status-{{ license.status }}">{{ license.status }}</span></td>
-                                <td><button class="btn-small btn-danger btn-delete-key" data-license-id="{{ license.id }}"><i class="fas fa-trash"></i> Delete</button></td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+                  <button class="mini-btn mini-green">
+                    <i class="fas fa-plus"></i>
+                    Credits
+                  </button>
 
-        <!-- PRODUCTS TAB -->
-        <div id="products-tab" class="tab-content">
-            <div class="card">
-                <h2><i class="fas fa-box"></i> Manage Products</h2>
-                
-                <button class="btn-primary" id="add-product-btn">
-                    <i class="fas fa-plus-circle"></i> Add New Product
-                </button>
-                
-                <!-- Add Product Form -->
-                <div id="add-product-form" style="display: none;" class="form-container">
-                    <h3><i class="fas fa-plus"></i> Add New Product</h3>
-                    
-                    <div class="form-group">
-                        <label><i class="fas fa-tag"></i> Product Name:</label>
-                        <input type="text" id="new-product-name" placeholder="Enter product name" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label><i class="fas fa-coins"></i> Credits per Day:</label>
-                        <input type="number" step="0.5" id="new-product-credits" placeholder="e.g., 10" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label><i class="fas fa-rupee-sign"></i> Price per Day (₹):</label>
-                        <input type="number" step="1" id="new-product-price" placeholder="e.g., 20" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label><i class="fas fa-key"></i> Key Type:</label>
-                        <select id="new-product-keytype">
-                            {% for key_type in key_types %}
-                            <option value="{{ key_type.type_name }}">{{ key_type.type_name }} - {{ key_type.description }}</option>
-                            {% endfor %}
-                            <option value="custom">🔧 Custom Pattern</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group" id="custom-pattern-group" style="display: none;">
-                        <label><i class="fas fa-code"></i> Custom Pattern:</label>
-                        <input type="text" id="new-product-custom-pattern" placeholder="e.g., MYKEY-{RANDOM8}-{DATE}">
-                        <small>Use {RANDOM4}, {RANDOM8}, {DIGITS6}, {DATE}, {USER4}, {PASS8} etc.</small>
-                    </div>
-                    
-                    <div class="flex gap-2">
-                        <button class="btn-primary" id="save-product">
-                            <i class="fas fa-save"></i> Save Product
-                        </button>
-                        <button class="btn-secondary" id="cancel-product">
-                            <i class="fas fa-times"></i> Cancel
-                        </button>
-                    </div>
+                  <button class="mini-btn mini-blue">
+                    <i class="fas fa-edit"></i>
+                    Edit
+                  </button>
+
+                  <button class="mini-btn mini-red">
+                    <i class="fas fa-trash"></i>
+                    Delete
+                  </button>
+
                 </div>
 
-                <!-- Products Table -->
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Product Name</th>
-                                <th>Credits/Day</th>
-                                <th>Price/Day</th>
-                                <th>Key Type</th>
-                                <th>Custom Pattern</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for product in products %}
-                            <tr>
-                                <td><strong>{{ product.name }}</strong></td>
-                                <td><span class="neon-text-green">{{ product.credit_cost_per_day }}</span></td>
-                                <td>₹{{ product.price_per_day }}</td>
-                                <td><span class="key-type-badge">{{ product.key_type }}</span></td>
-                                <td><code>{{ product.custom_key_pattern or '-' }}</code></td>
-                                <td>
-                                    <span class="status-badge status-{{ 'active' if product.is_active else 'inactive' }}">
-                                        {{ 'Active' if product.is_active else 'Inactive' }}
-                                    </span>
-                                </td>
-                                <td>
-                                    <button class="btn-small btn-edit-product" data-product-id="{{ product.id }}">
-                                        <i class="fas fa-edit"></i> Edit
-                                    </button>
-                                    <button class="btn-small btn-danger btn-delete-product" data-product-id="{{ product.id }}">
-                                        <i class="fas fa-trash"></i> Delete
-                                    </button>
-                                    <button class="btn-small btn-toggle-product" data-product-id="{{ product.id }}" data-active="{{ product.is_active }}">
-                                        <i class="fas fa-{{ 'eye-slash' if product.is_active else 'eye' }}"></i>
-                                        {{ 'Disable' if product.is_active else 'Enable' }}
-                                    </button>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+              </td>
 
-        <!-- KEY TYPES TAB -->
-        <div id="keytypes-tab" class="tab-content">
-            <div class="card">
-                <h2><i class="fas fa-cog"></i> Key Types Management</h2>
-                
-                <button class="btn-primary" id="add-keytype-btn">
-                    <i class="fas fa-plus-circle"></i> Add New Key Type
-                </button>
-                
-                <!-- Add Key Type Form -->
-                <div id="add-keytype-form" style="display: none;" class="form-container">
-                    <h3>Add Custom Key Type</h3>
-                    
-                    <div class="form-group">
-                        <label>Type Name:</label>
-                        <input type="text" id="new-keytype-name" placeholder="e.g., mycustomkey" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Pattern:</label>
-                        <input type="text" id="new-keytype-pattern" placeholder="e.g., CUSTOM-{RANDOM6}" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Description:</label>
-                        <input type="text" id="new-keytype-desc" placeholder="Describe the key format">
-                    </div>
-                    
-                    <div class="flex gap-2">
-                        <button class="btn-primary" id="save-keytype">
-                            <i class="fas fa-save"></i> Save Key Type
-                        </button>
-                        <button class="btn-secondary" id="cancel-keytype">
-                            <i class="fas fa-times"></i> Cancel
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Key Types Table -->
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Type Name</th>
-                                <th>Pattern</th>
-                                <th>Description</th>
-                                <th>Created</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for key_type in key_types %}
-                            <tr>
-                                <td><strong>{{ key_type.type_name }}</strong></td>
-                                <td><code>{{ key_type.pattern }}</code></td>
-                                <td>{{ key_type.description }}</td>
-                                <td>{% if key_type.created_at %}{% if key_type.created_at is string %}{{ key_type.created_at[:10] }}{% else %}{{ key_type.created_at.strftime('%Y-%m-%d') }}{% endif %}{% else %}N/A{% endif %}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
+            </tr>
 
-    <!-- EDIT PRODUCT MODAL -->
-    <div id="edit-product-modal" class="modal" style="display: none;">
-        <div class="modal-content">
-            <h3><i class="fas fa-edit"></i> Edit Product</h3>
-            
-            <input type="hidden" id="edit-product-id">
-            
-            <div class="form-group">
-                <label>Product Name:</label>
-                <input type="text" id="edit-product-name" required>
-            </div>
-            
-            <div class="form-group">
-                <label>Credits per Day:</label>
-                <input type="number" step="0.5" id="edit-product-credits" required>
-            </div>
-            
-            <div class="form-group">
-                <label>Price per Day (₹):</label>
-                <input type="number" step="1" id="edit-product-price" required>
-            </div>
-            
-            <div class="form-group">
-                <label>Key Type:</label>
-                <select id="edit-product-keytype">
-                    {% for key_type in key_types %}
-                    <option value="{{ key_type.type_name }}">{{ key_type.type_name }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            
-            <div class="form-group">
-                <label>Custom Pattern (optional):</label>
-                <input type="text" id="edit-product-custom-pattern" placeholder="e.g., MYKEY-{RANDOM8}">
-            </div>
-            
-            <div class="flex gap-2">
-                <button class="btn-primary" id="update-product">
-                    <i class="fas fa-save"></i> Update
-                </button>
-                <button class="btn-secondary" id="close-modal">
-                    <i class="fas fa-times"></i> Cancel
-                </button>
-            </div>
-        </div>
-    </div>
+            {% endfor %}
 
-    <!-- ADD CREDITS MODAL -->
-    <div id="add-credits-modal" class="modal" style="display: none;">
-        <div class="modal-content">
-            <h3><i class="fas fa-plus-circle"></i> Add Credits to User</h3>
-            
-            <input type="hidden" id="add-credits-username">
-            
-            <div class="form-group">
-                <label>Credits to Add:</label>
-                <input type="number" step="0.5" id="add-credits-amount" min="1" placeholder="Enter credits" required>
-            </div>
-            
-            <div class="flex gap-2">
-                <button class="btn-primary" id="confirm-add-credits">
-                    <i class="fas fa-check"></i> Add Credits
-                </button>
-                <button class="btn-secondary" id="close-credits-modal">
-                    <i class="fas fa-times"></i> Cancel
-                </button>
-            </div>
-        </div>
-    </div>
+          </tbody>
 
-    <!-- NOTIFICATION MODAL -->
-    <div id="notification-modal" class="modal" style="display: none;">
-        <div class="modal-content">
-            <h3><i class="fas fa-bell"></i> Send Notification</h3>
-            
-            <div class="form-group">
-                <label>Title (Optional):</label>
-                <input type="text" id="notification-title" placeholder="e.g., Announcement, Update, Offer">
-            </div>
-            
-            <div class="form-group">
-                <label>Message:</label>
-                <textarea id="notification-message" rows="4" placeholder="Enter your message here..." required></textarea>
-            </div>
-            
-            <div class="form-group">
-                <label>Send to:</label>
-                <select id="notification-target">
-                    <option value="all">📢 All Users</option>
-                    <option value="specific">🎯 Specific User</option>
-                </select>
-                <select id="user-list-select" style="display: none; margin-top: 10px;">
-                    <option value="">-- Select User --</option>
-                </select>
-            </div>
-            
-            <div class="flex gap-2">
-                <button class="btn-primary" id="send-notification-submit">
-                    <i class="fas fa-paper-plane"></i> Send
-                </button>
-                <button class="btn-secondary" id="close-notification-modal">
-                    <i class="fas fa-times"></i> Cancel
-                </button>
-            </div>
-        </div>
-    </div>
+        </table>
 
-    <!-- SUPPORT SECTION -->
-    <div class="support-section" style="margin-top: 2rem;">
-        <h3><i class="fas fa-headset"></i> Quick Support</h3>
-        <div class="support-grid">
-            <a href="{{ telegram_support }}" target="_blank" class="support-card telegram">
-                <i class="fab fa-telegram"></i>
-                <span>Telegram Support</span>
-                <small>Click to chat with admin</small>
-            </a>
-            <a href="{{ whatsapp_channel }}" target="_blank" class="support-card whatsapp">
-                <i class="fab fa-whatsapp"></i>
-                <span>WhatsApp Channel</span>
-                <small>Join for updates</small>
-            </a>
-        </div>
-    </div>
+      </div>
 
-    <style>
-        .badge {
-            background: var(--accent-red);
-            color: white;
-            padding: 0.2rem 0.5rem;
-            border-radius: 20px;
-            font-size: 0.7rem;
-            margin-left: 0.5rem;
-        }
-        .flex { display: flex; }
-        .gap-2 { gap: 1rem; }
-        .btn-cancel-binance:hover {
-            background: #e68900 !important;
-        }
-        .btn-telegram-small {
-            background: #0088cc;
-            color: white;
-            padding: 0.4rem 0.8rem;
-            border-radius: 6px;
-            text-decoration: none;
-            font-size: 0.8rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.4rem;
-            transition: all 0.2s ease;
-            border: none;
-            cursor: pointer;
-        }
-        .btn-telegram-small:hover {
-            background: #006699;
-            transform: translateY(-2px);
-        }
-        .btn-notification {
-            background: linear-gradient(145deg, #ff00ff, #cc00cc);
-            color: white;
-            padding: 0.8rem 1.5rem;
-            border-radius: 40px;
-            border: none;
-            cursor: pointer;
-            font-weight: bold;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.8rem;
-            transition: all 0.3s ease;
-        }
-        .btn-notification:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 0 20px rgba(255,0,255,0.5);
-        }
-        .support-card.whatsapp {
-            background: linear-gradient(145deg, #25D366, #128C7E);
-            color: white;
-        }
-        .support-card.whatsapp:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(37, 211, 102, 0.4);
-        }
-    </style>
+    </section>
 
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <section class="panel">
+
+      <div class="panel-header">
+        <h2>
+          <i class="fas fa-headset"></i>
+          Quick Support
+        </h2>
+      </div>
+
+      <div class="support-grid">
+
+        <a href="{{ telegram_support }}" class="support-card telegram" target="_blank">
+          <i class="fab fa-telegram"></i>
+          <h3>Telegram Support</h3>
+          <p>Chat directly with admin support team.</p>
+        </a>
+
+        <a href="{{ whatsapp_channel }}" class="support-card whatsapp" target="_blank">
+          <i class="fab fa-whatsapp"></i>
+          <h3>WhatsApp Channel</h3>
+          <p>Get instant updates and announcements.</p>
+        </a>
+
+      </div>
+
+    </section>
+
+    <footer class="footer">
+      © 2026 Neon Dashboard Admin Panel. All rights reserved.
+    </footer>
+
+  </div>
+
 </body>
 </html>
