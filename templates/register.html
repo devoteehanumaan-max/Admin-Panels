@@ -6,15 +6,35 @@
     <title>Register - Neon Dashboard</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .footer-links {
+            text-align: center;
+            padding: 1rem;
+            margin-top: 2rem;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+        }
+        .footer-links a {
+            color: var(--accent-pink);
+            text-decoration: none;
+            margin: 0 0.5rem;
+        }
+        .discord-warning {
+            background: linear-gradient(145deg, #5865F2, #404EED);
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+    </style>
 </head>
 <body class="auth-body">
     <div class="auth-container">
         <img src="https://i.ibb.co/1GBn25c5/VID-20260310-172522-610-ezgif-com-video-to-gif-converter.gif" alt="Logo" class="logo">
-        <h2>Create Account</h2>
+        <h2><i class="fas fa-user-plus"></i> Create Account</h2>
         
-        <!-- Discord Join Reminder -->
-        <div style="background: linear-gradient(145deg, #5865F2, #404EED); padding: 1rem; border-radius: 10px; margin-bottom: 1.5rem; text-align: center;">
-            <i class="fab fa-discord" style="font-size: 2rem; margin-right: 0.5rem;"></i>
+        <div class="discord-warning">
+            <i class="fab fa-discord" style="font-size: 2rem;"></i>
             <strong>Join our Discord first!</strong>
             <p style="margin-top: 0.5rem; font-size: 0.9rem;">You must join our Discord server before registering</p>
             <a href="{{ discord_invite }}" target="_blank" class="btn-small" style="background: white; color: #5865F2; margin-top: 0.5rem; display: inline-block;">
@@ -29,7 +49,7 @@
         <form method="POST" action="{{ url_for('register') }}">
             <div class="form-group">
                 <label for="username"><i class="fas fa-user"></i> Username</label>
-                <input type="text" id="username" name="username" required>
+                <input type="text" id="username" name="username" placeholder="Choose a username" required>
             </div>
             
             <div class="form-group">
@@ -40,12 +60,12 @@
             
             <div class="form-group">
                 <label for="password"><i class="fas fa-lock"></i> Password</label>
-                <input type="password" id="password" name="password" required>
+                <input type="password" id="password" name="password" placeholder="Create a password (min 6 characters)" required>
             </div>
             
             <div class="form-group">
                 <label for="confirm_password"><i class="fas fa-lock"></i> Confirm Password</label>
-                <input type="password" id="confirm_password" name="confirm_password" required>
+                <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm your password" required>
             </div>
             
             <button type="submit" class="btn-primary">
@@ -54,21 +74,12 @@
         </form>
         
         <p class="auth-link">Already have an account? <a href="{{ url_for('login') }}">Login here</a></p>
-        
-        <!-- Support Section -->
-        <div class="support-section" style="margin-top: 2rem;">
-            <h3><i class="fas fa-headset"></i> Need Help?</h3>
-            <div class="support-grid" style="grid-template-columns: 1fr 1fr;">
-                <a href="{{ telegram_support }}" target="_blank" class="support-card telegram">
-                    <i class="fab fa-telegram"></i>
-                    <span>Telegram Support</span>
-                </a>
-                <a href="{{ whatsapp_channel }}" target="_blank" class="support-card whatsapp">
-                    <i class="fab fa-whatsapp"></i>
-                    <span>WhatsApp Channel</span>
-                </a>
-            </div>
-        </div>
+    </div>
+
+    <div class="footer-links">
+        <p>&copy; 2026 Neon Dashboard. All rights reserved.</p>
+        <a href="{{ url_for('privacy') }}">Privacy Policy</a> |
+        <a href="{{ url_for('terms') }}">Terms of Service</a>
     </div>
 </body>
 </html>
