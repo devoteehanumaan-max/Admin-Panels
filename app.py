@@ -1688,6 +1688,16 @@ def terms():
                          whatsapp_channel=WHATSAPP_CHANNEL)
 
 # ============================================
+# ABOUT PAGE ROUTE
+# ============================================
+
+@app.route('/about')
+def about():
+    return render_template('about.html',
+                         telegram_support=TELEGRAM_SUPPORT_LINK,
+                         whatsapp_channel=WHATSAPP_CHANNEL)
+
+# ============================================
 # MAIN
 # ============================================
 
