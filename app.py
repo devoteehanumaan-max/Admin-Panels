@@ -1655,6 +1655,17 @@ def hwid_reset_all():
 def robots_txt():
     return send_from_directory('static', 'robots.txt', mimetype='text/plain')
 
+@app.route('/sw.js')
+def service_worker():
+    return send_from_directory('static', 'sw.js', mimetype='application/javascript')
+
+@app.route('/<path:filename>')
+def static_files(filename):
+    allowed_extensions = ('.js', '.html', '.txt', '.xml')
+    if filename.endswith(allowed_extensions):
+        return send_from_directory('static', filename)
+    return redirect(url_for('index'))
+
 # ============================================
 # ERROR HANDLERS
 # ============================================
