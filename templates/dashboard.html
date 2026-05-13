@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* Additional Dashboard Styles */
         .top-banner-ad {
             background: rgba(0,0,0,0.2);
             border-radius: 12px;
@@ -60,7 +59,6 @@
     <div style="text-align: center; margin: 10px auto; max-width: 728px; padding: 0 10px;">
         <div class="top-banner-ad" style="background: rgba(0,0,0,0.2); border-radius: 10px; overflow: hidden;">
             <small style="display: block; color: #888; font-size: 10px; padding: 2px;">Advertisement</small>
-            <!-- AdSense code yahan aayega -->
             <div style="min-height: 90px; display: flex; align-items: center; justify-content: center; color: var(--text-secondary);">
                 <i class="fas fa-ad"></i> Ad Space
             </div>
@@ -192,13 +190,13 @@
                                         <i class="fas fa-sync"></i> Reset HWID
                                     </button>
                                 </td>
-                            </tr>
+                             </tr>
                             {% else %}
                             <tr>
                                 <td colspan="7" style="text-align: center; color: var(--text-secondary);">
                                     No keys generated yet
                                 </td>
-                            </tr>
+                             </tr>
                             {% endfor %}
                         </tbody>
                     </table>
@@ -219,7 +217,7 @@
                                 <th>Date</th>
                                 <th>Status</th>
                                 <th>Reason (if rejected)</th>
-                            </tr>
+                             </tr>
                         </thead>
                         <tbody>
                             {% for payment in payments %}
@@ -261,13 +259,13 @@
                                     <span style="color: var(--accent-red);">Rejected by admin</span>
                                     {% endif %}
                                 </td>
-                            </tr>
+                             </tr>
                             {% else %}
                             <tr>
                                 <td colspan="7" style="text-align: center; color: var(--text-secondary);">
                                     No payment history found
                                 </td>
-                            </tr>
+                             </tr>
                             {% endfor %}
                         </tbody>
                     </table>
@@ -276,16 +274,16 @@
         </div>
     </div>
 
-    <!-- Support Section -->
+    <!-- Support Section - Using Environment Variables -->
     <div class="support-section" style="margin-top: 2rem; margin-bottom: 2rem;">
         <h3><i class="fas fa-headset"></i> Need Help?</h3>
         <div class="support-grid">
-            <a href="https://t.me/SMGrowMarthqofc" target="_blank" class="support-card telegram">
+            <a href="{{ telegram_support }}" target="_blank" class="support-card telegram">
                 <i class="fab fa-telegram"></i>
                 <span>Telegram Support</span>
                 <small>Click to chat with admin</small>
             </a>
-            <a href="https://whatsapp.com/channel/0029Vb8933MC6ZvoqBiPVq2h" target="_blank" class="support-card whatsapp">
+            <a href="{{ whatsapp_channel }}" target="_blank" class="support-card whatsapp">
                 <i class="fab fa-whatsapp"></i>
                 <span>WhatsApp Channel</span>
                 <small>Join for updates</small>
@@ -298,7 +296,7 @@
         <p>&copy; 2026 Neon Dashboard. All rights reserved.</p>
         <a href="{{ url_for('privacy') }}">Privacy Policy</a> |
         <a href="{{ url_for('terms') }}">Terms of Service</a> |
-        <a href="https://t.me/SMGrowMarthqofc">Contact Us</a>
+        <a href="{{ telegram_support }}">Contact Us</a>
     </div>
 
     <script src="{{ url_for('static', filename='script.js') }}"></script>
