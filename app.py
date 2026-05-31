@@ -323,15 +323,15 @@ add_missing_columns()
 CREDIT_RATE = float(os.getenv('CREDIT_RATE', 0.5))
 MINIMUM_RECHARGE = int(os.getenv('MIN_RECHARGE', 1000))
 UPI_ID = os.getenv('UPI_ID', 'prabhu84@ptaxis')
-UPI_NAME = os.getenv('UPI_NAME', 'Digamber Raj')
+UPI_NAME = os.getenv('UPI_NAME', 'SM GrowMart HQ')
 
 # ============================================
 # SUPPORT LINKS - UPDATED
 # ============================================
-TELEGRAM_SUPPORT_LINK = os.getenv('TELEGRAM_SUPPORT_LINK', 'https://t.me/SMGrowMarthqofc')
-WHATSAPP_CHANNEL = os.getenv('WHATSAPP_CHANNEL', 'https://whatsapp.com/channel/0029Vb8933MC6ZvoqBiPVq2h')
+TELEGRAM_SUPPORT_LINK = os.getenv('TELEGRAM_SUPPORT_LINK', 'TELEGRAM_SUPPORT_LINK')
+WHATSAPP_CHANNEL = os.getenv('WHATSAPP_CHANNEL', 'WHATSAPP_CHANNEL')
 USD_TO_INR = 98
-BINANCE_ADDRESS = '1143351874'
+BINANCE_ADDRESS = '814429508'
 
 # ============================================
 # DISCORD CONFIGURATION
