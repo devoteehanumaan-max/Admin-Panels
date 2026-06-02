@@ -52,42 +52,75 @@
             color: var(--accent-pink);
             margin-top: 0.5rem;
         }
-        .proceed-btn {
-            margin-top: 1.5rem;
+        .payment-details {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: rgba(0,0,0,0.4);
+            border-radius: 20px;
+            border: 2px solid var(--accent-green);
+        }
+        .qr-code {
+            text-align: center;
             padding: 1rem;
-            font-size: 1.2rem;
         }
-        .iframe-container {
-            margin-top: 1.5rem;
+        .qr-code img {
+            width: 200px;
+            height: 200px;
+            background: white;
+            padding: 10px;
+            border-radius: 15px;
+        }
+        .address-box {
+            background: rgba(0,0,0,0.6);
+            padding: 1rem;
             border-radius: 12px;
-            overflow: hidden;
+            word-break: break-all;
+            font-family: monospace;
+            margin: 1rem 0;
+            font-size: 1.1rem;
         }
-        .iframe-container iframe {
-            width: 100%;
-            height: 550px;
+        .amount-box {
+            background: rgba(0,255,0,0.1);
+            padding: 1rem;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--accent-green);
+            margin: 1rem 0;
+        }
+        .copy-btn {
+            background: var(--accent-pink);
+            color: black;
             border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-left: 0.5rem;
         }
-        .payment-step {
-            transition: all 0.3s ease;
+        .loading {
+            text-align: center;
+            padding: 2rem;
         }
         .hidden {
             display: none;
         }
         .pointer-down {
             text-align: center;
-            margin-bottom: 1rem;
+            margin-bottom: 0.5rem;
             animation: bounce 1s infinite;
         }
         @keyframes bounce {
             0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(10px); }
+            50% { transform: translateY(8px); }
         }
         @media (max-width: 768px) {
             .amount-options {
                 grid-template-columns: repeat(2, 1fr);
             }
-            .iframe-container iframe {
-                height: 600px;
+            .qr-code img {
+                width: 150px;
+                height: 150px;
             }
         }
     </style>
@@ -109,72 +142,71 @@
                 <i class="fab fa-ethereum" style="font-size: 2rem; margin: 0 0.3rem;"></i>
                 <i class="fab fa-btc" style="font-size: 2rem; margin: 0 0.3rem;"></i>
                 <h2 style="color: black; margin-top: 0.5rem;">Crypto Payment</h2>
-                <p style="color: black;">Pay with USDT, BTC, ETH, BNB</p>
+                <p style="color: black;">Pay with USDT (BEP20)</p>
             </div>
 
             <!-- Step 1: Select Amount -->
-            <div id="step-select" class="payment-step">
+            <div id="step-select">
                 <div class="pointer-down">
                     <i class="fas fa-hand-point-down" style="font-size: 2rem; color: var(--accent-green);"></i>
                 </div>
                 <h3><i class="fas fa-coins"></i> Select Amount</h3>
                 <div class="amount-options">
-                    <!-- $10 -->
                     <div class="amount-card" data-amount="10" data-usd="10" data-credits="{{ (10 * usd_to_inr * credit_rate)|round(1) }}">
                         <div class="amount-price">$10</div>
-                        <div class="amount-usd">≈ ₹{{ (10 * usd_to_inr)|round(0) }}</div>
                         <div class="amount-credits">{{ (10 * usd_to_inr * credit_rate)|round(1) }} Credits</div>
                     </div>
-                    <!-- $20 -->
                     <div class="amount-card" data-amount="20" data-usd="20" data-credits="{{ (20 * usd_to_inr * credit_rate)|round(1) }}">
                         <div class="amount-price">$20</div>
-                        <div class="amount-usd">≈ ₹{{ (20 * usd_to_inr)|round(0) }}</div>
                         <div class="amount-credits">{{ (20 * usd_to_inr * credit_rate)|round(1) }} Credits</div>
                     </div>
-                    <!-- $30 -->
                     <div class="amount-card" data-amount="30" data-usd="30" data-credits="{{ (30 * usd_to_inr * credit_rate)|round(1) }}">
                         <div class="amount-price">$30</div>
-                        <div class="amount-usd">≈ ₹{{ (30 * usd_to_inr)|round(0) }}</div>
                         <div class="amount-credits">{{ (30 * usd_to_inr * credit_rate)|round(1) }} Credits</div>
                     </div>
-                    <!-- $50 -->
                     <div class="amount-card" data-amount="50" data-usd="50" data-credits="{{ (50 * usd_to_inr * credit_rate)|round(1) }}">
                         <div class="amount-price">$50</div>
-                        <div class="amount-usd">≈ ₹{{ (50 * usd_to_inr)|round(0) }}</div>
                         <div class="amount-credits">{{ (50 * usd_to_inr * credit_rate)|round(1) }} Credits</div>
                     </div>
-                    <!-- $100 -->
                     <div class="amount-card" data-amount="100" data-usd="100" data-credits="{{ (100 * usd_to_inr * credit_rate)|round(1) }}">
                         <div class="amount-price">$100</div>
-                        <div class="amount-usd">≈ ₹{{ (100 * usd_to_inr)|round(0) }}</div>
                         <div class="amount-credits">{{ (100 * usd_to_inr * credit_rate)|round(1) }} Credits</div>
                     </div>
                 </div>
-
-                <button id="proceed-payment" class="btn-primary proceed-btn" disabled>
-                    <i class="fas fa-arrow-right"></i> Proceed to Payment
-                </button>
             </div>
 
-            <!-- Step 2: Payment Iframe -->
-            <div id="step-payment" class="payment-step hidden">
-                <div class="iframe-container">
-                    <iframe 
-                        id="payment-iframe"
-                        src="" 
-                        width="100%" 
-                        height="550px" 
-                        style="border: none; border-radius: 12px;"
-                        title="Crypto Payment Gateway">
-                    </iframe>
+            <!-- Step 2: Payment Details (Direct Show) -->
+            <div id="payment-details" class="payment-details hidden">
+                <div class="loading" id="payment-loading">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 2rem;"></i>
+                    <p>Generating payment details...</p>
                 </div>
-                <button id="back-to-amount" class="btn-secondary" style="margin-top: 1rem;">
-                    <i class="fas fa-arrow-left"></i> Back to Amount Selection
-                </button>
+                
+                <div id="payment-content" class="hidden">
+                    <div class="qr-code">
+                        <img id="qr-image" src="" alt="QR Code">
+                    </div>
+                    <div class="amount-box">
+                        💰 Amount to Pay: <span id="pay-amount">0</span> USDT
+                    </div>
+                    <div class="address-box">
+                        <strong>📤 Send to Address:</strong><br>
+                        <span id="payment-address">Loading...</span>
+                        <button class="copy-btn" onclick="copyAddress()">Copy</button>
+                    </div>
+                    <div class="status-checking" id="status-checking">
+                        <i class="fas fa-clock"></i>
+                        <p>Waiting for payment confirmation...</p>
+                        <p style="font-size: 0.8rem;">Payment expires in 10 minutes</p>
+                    </div>
+                    <button id="back-to-amount" class="btn-secondary" style="margin-top: 1rem;">
+                        <i class="fas fa-arrow-left"></i> Back to Amount Selection
+                    </button>
+                </div>
             </div>
 
             <!-- Support Section -->
-            <div class="support-section" style="margin-top: 1.5rem;">
+            <div class="support-section" style="margin-top: 2rem;">
                 <h3><i class="fas fa-headset"></i> Need Help?</h3>
                 <div class="support-grid">
                     <a href="{{ telegram_support }}" target="_blank" class="support-card telegram">
@@ -235,59 +267,129 @@
         .hidden {
             display: none;
         }
+        .status-checking {
+            text-align: center;
+            padding: 1rem;
+            margin-top: 1rem;
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+        }
     </style>
 
     <script>
+        let currentOrderId = null;
+        let checkInterval = null;
         let selectedAmount = null;
         let selectedUsd = null;
-        let selectedCredits = null;
 
-        // Handle amount card selection
+        // Handle amount card click - DIRECTLY GENERATE PAYMENT
         document.querySelectorAll('.amount-card').forEach(card => {
-            card.addEventListener('click', function() {
+            card.addEventListener('click', async function() {
+                // Remove selected class from all
                 document.querySelectorAll('.amount-card').forEach(c => c.classList.remove('selected'));
                 this.classList.add('selected');
                 
                 selectedAmount = this.dataset.amount;
                 selectedUsd = this.dataset.usd;
-                selectedCredits = this.dataset.credits;
                 
-                document.getElementById('proceed-payment').disabled = false;
+                // Directly generate payment for this amount
+                await generatePayment(selectedUsd);
             });
         });
 
-        // Proceed to payment
-        document.getElementById('proceed-payment').addEventListener('click', function() {
-            if (!selectedAmount) {
-                alert('Please select an amount first');
-                return;
-            }
-
-            const iframeUrl = `https://binance.digamber.in/?amount=${selectedUsd}`;
-            document.getElementById('payment-iframe').src = iframeUrl;
+        async function generatePayment(amountUSD) {
+            // Show payment details section with loading
+            document.getElementById('payment-details').classList.remove('hidden');
+            document.getElementById('payment-loading').classList.remove('hidden');
+            document.getElementById('payment-content').classList.add('hidden');
             
-            document.getElementById('step-select').classList.add('hidden');
-            document.getElementById('step-payment').classList.remove('hidden');
-        });
+            try {
+                const response = await fetch('/api/create_crypto_order', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        amount: parseFloat(amountUSD), 
+                        currency: 'USDT', 
+                        network: 'BSC' 
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    currentOrderId = data.order_id;
+                    
+                    // Show payment details
+                    document.getElementById('qr-image').src = 'data:image/png;base64,' + data.qr_code;
+                    document.getElementById('payment-address').innerText = data.address;
+                    document.getElementById('pay-amount').innerText = data.amount_crypto;
+                    
+                    // Hide loading, show content
+                    document.getElementById('payment-loading').classList.add('hidden');
+                    document.getElementById('payment-content').classList.remove('hidden');
+                    
+                    // Start checking payment status
+                    startPaymentCheck();
+                } else {
+                    alert('Error: ' + (data.error || 'Failed to create order'));
+                    document.getElementById('payment-details').classList.add('hidden');
+                }
+            } catch (error) {
+                alert('Network error. Please try again.');
+                document.getElementById('payment-details').classList.add('hidden');
+            }
+        }
+
+        function startPaymentCheck() {
+            let attempts = 0;
+            if (checkInterval) clearInterval(checkInterval);
+            
+            checkInterval = setInterval(async () => {
+                attempts++;
+                if (attempts > 120) { // 10 minutes timeout
+                    clearInterval(checkInterval);
+                    document.getElementById('status-checking').innerHTML = `
+                        <div class="error-message">
+                            <i class="fas fa-clock"></i>
+                            <p>Payment expired. Please try again.</p>
+                            <button class="btn-primary" onclick="location.reload()">Try Again</button>
+                        </div>
+                    `;
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`/api/check_crypto_order/${currentOrderId}`);
+                    const data = await response.json();
+                    
+                    if (data.status === 'completed') {
+                        clearInterval(checkInterval);
+                        document.getElementById('status-checking').innerHTML = `
+                            <div class="success-message">
+                                <i class="fas fa-check-circle" style="font-size: 2rem;"></i>
+                                <h3>✅ PAYMENT RECEIVED!</h3>
+                                <p>Credits have been added to your account.</p>
+                                <a href="{{ url_for('user_dashboard') }}" class="btn-primary" style="margin-top: 1rem;">Go to Dashboard</a>
+                            </div>
+                        `;
+                    }
+                } catch (error) {
+                    console.error('Check error:', error);
+                }
+            }, 5000);
+        }
+
+        function copyAddress() {
+            const address = document.getElementById('payment-address').innerText;
+            navigator.clipboard.writeText(address);
+            alert('✅ Address copied to clipboard!');
+        }
 
         // Back to amount selection
         document.getElementById('back-to-amount').addEventListener('click', function() {
-            document.getElementById('step-payment').classList.add('hidden');
+            if (checkInterval) clearInterval(checkInterval);
+            document.getElementById('payment-details').classList.add('hidden');
             document.getElementById('step-select').classList.remove('hidden');
-            document.getElementById('payment-iframe').src = '';
-        });
-
-        // Listen for messages from iframe
-        window.addEventListener('message', function(event) {
-            if (event.origin !== 'https://binance.digamber.in') return;
-            
-            const data = event.data;
-            if (data.type === 'payment_success') {
-                alert('✅ Payment Successful! Credits will be added shortly.');
-                setTimeout(() => {
-                    window.location.href = "{{ url_for('user_dashboard') }}";
-                }, 2000);
-            }
         });
     </script>
 </body>
