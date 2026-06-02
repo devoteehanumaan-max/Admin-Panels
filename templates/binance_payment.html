@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Binance Crypto Payment</title>
+    <title>Binance Crypto Payment - Neon Dashboard</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -18,215 +18,91 @@
     </nav>
 
     <div class="container">
-        <div class="payment-container">
-            <div class="card">
-                <div style="background: linear-gradient(145deg, #f0b90b, #d4a00a); padding: 1.5rem; border-radius: 40px; text-align: center; margin-bottom: 2rem;">
-                    <i class="fab fa-bitcoin" style="font-size: 2.5rem;"></i>
-                    <i class="fab fa-ethereum" style="font-size: 2.5rem;"></i>
-                    <h2 style="color: black; margin: 0.5rem 0;">BINANCE CRYPTO PAYMENT</h2>
-                    <p style="color: black; font-weight: bold;">AUTO CREDITS on successful payment</p>
-                    <p style="color: black;">💰 1 USD = {{ usd_to_inr }} INR</p>
-                </div>
-                
-                {% if error %}
-                <div class="error-message">{{ error }}</div>
-                {% endif %}
-                
-                {% if order_id %}
-                <!-- Payment Details -->
-                <div style="text-align: center; margin-bottom: 2rem; background: rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 15px;">
-                    <h3>✅ Order Created Successfully!</h3>
-                    <p style="margin: 0.5rem 0;">Order ID: <strong>{{ order_id }}</strong></p>
-                    <p style="margin: 0.5rem 0;">Amount: <strong class="neon-text-green">${{ amount_usd }}</strong> (≈ ₹{{ amount_inr }})</p>
-                    <p style="margin: 0.5rem 0;">Credits: <strong class="neon-text-green">{{ credits }}</strong></p>
-                </div>
-                
-                <!-- BINANCE ADDRESS -->
-                <div style="text-align: center; margin: 2rem 0; padding: 2rem; background: rgba(0,0,0,0.5); border-radius: 20px; border: 2px solid var(--accent-green);">
-                    <i class="fas fa-wallet" style="font-size: 3rem; color: var(--accent-green); margin-bottom: 1rem;"></i>
-                    <h3 style="color: var(--accent-green);">Send to this Binance ID</h3>
-                    <div style="background: rgba(0,0,0,0.7); padding: 1.5rem; border-radius: 15px; margin: 1rem 0; border: 1px solid var(--accent-pink);">
-                        <code style="font-size: 1.5rem; color: var(--accent-green); font-weight: bold;">{{ binance_address }}</code>
-                    </div>
-                    <button class="btn-primary" style="width: auto; padding: 1rem 3rem; background: var(--accent-green); color: black;" onclick="copyAddress('{{ binance_address }}')">
-                        <i class="fas fa-copy"></i> COPY BINANCE ID
-                    </button>
-                    <p style="margin-top: 1rem; color: var(--text-secondary);">Send exactly <strong>${{ amount_usd }}</strong> worth of crypto to this Binance ID</p>
-                    <p style="color: var(--accent-yellow); font-size: 0.9rem;">⚠️ Make sure you're sending to the correct Binance ID</p>
-                </div>
-                
-                <!-- Auto-check Status -->
-                <div style="text-align: center; margin: 2rem 0;" id="payment-status">
-                    <div style="background: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 15px;">
-                        <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: var(--accent-yellow);"></i>
-                        <p style="margin-top: 1rem; font-size: 1.2rem;">Waiting for payment confirmation...</p>
-                        <p style="color: var(--text-secondary);">This page will auto-update when payment is received</p>
-                        <div style="height: 10px; background: rgba(255,255,255,0.1); border-radius: 5px; overflow: hidden; margin-top: 1.5rem;">
-                            <div style="height: 100%; width: 0%; background: var(--accent-green);" id="progress-bar"></div>
-                        </div>
-                        <p style="margin-top: 1rem; color: var(--accent-yellow);">⏱️ Payment expires in 10 minutes</p>
-                    </div>
-                </div>
-                
-                <!-- Manual Check Button -->
-                <div style="text-align: center; margin-top: 1rem;">
-                    <button class="btn-secondary" onclick="checkPayment()" style="width: auto; padding: 0.8rem 2rem;">
-                        <i class="fas fa-sync-alt"></i> Check Status Manually
-                    </button>
-                </div>
-                
-                <script>
-                let checkCount = 0;
-                let checkInterval;
-                let expiryTime = Date.now() + (10 * 60 * 1000);
-                
-                function copyAddress(address) {
-                    navigator.clipboard.writeText(address).then(function() {
-                        alert('✅ Binance ID copied to clipboard!');
-                    }, function() {
-                        alert('❌ Failed to copy. Please copy manually: ' + address);
-                    });
-                }
-                
-                function updateProgress() {
-                    checkCount++;
-                    let progress = Math.min(checkCount * 5, 90);
-                    document.getElementById('progress-bar').style.width = progress + '%';
-                    
-                    if (Date.now() > expiryTime) {
-                        document.getElementById('payment-status').innerHTML = `
-                            <div class="error-message">
-                                <i class="fas fa-clock"></i>
-                                <h3>⏰ PAYMENT EXPIRED</h3>
-                                <p>Order expired after 10 minutes. Please create a new payment.</p>
-                                <a href="{{ url_for('binance_payment') }}" class="btn-primary" style="margin-top: 1rem;">
-                                    <i class="fas fa-redo"></i> Create New Order
-                                </a>
-                            </div>
-                        `;
-                        clearInterval(checkInterval);
-                    }
-                }
-                
-                function checkPayment() {
-                    if (Date.now() > expiryTime) {
-                        updateProgress();
-                        return;
-                    }
-                    
-                    fetch('/payment/binance/check/{{ order_id }}')
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success && data.status === 'completed') {
-                                clearInterval(checkInterval);
-                                document.getElementById('payment-status').innerHTML = `
-                                    <div class="success-message">
-                                        <i class="fas fa-check-circle" style="font-size: 4rem;"></i>
-                                        <h2>✅ PAYMENT RECEIVED!</h2>
-                                        <p style="font-size: 1.5rem;">${data.credits} Credits Added!</p>
-                                        <a href="{{ url_for('user_dashboard') }}" class="btn-primary" style="width: auto; padding: 1rem 3rem;">
-                                            <i class="fas fa-tachometer-alt"></i> Go to Dashboard
-                                        </a>
-                                    </div>
-                                `;
-                            } else {
-                                updateProgress();
-                            }
-                        });
-                }
-                
-                checkInterval = setInterval(checkPayment, 5000);
-                setTimeout(checkPayment, 2000);
-                
-                setTimeout(function() {
-                    fetch('/payment/binance/cleanup/{{ order_id }}', { method: 'POST' });
-                }, 10 * 60 * 1000);
-                </script>
-                
-                {% else %}
-                <!-- Amount Form -->
-                <form method="POST">
-                    <div class="form-group">
-                        <label><i class="fas fa-rupee-sign"></i> Amount (₹) - Minimum ₹{{ min_recharge }}</label>
-                        <input type="number" name="amount" min="{{ min_recharge }}" step="1" required placeholder="Enter amount in INR" id="amount-input" oninput="updateUSD(this.value)">
-                    </div>
-                    
-                    <div style="background: rgba(240,185,11,0.1); padding: 1.5rem; border-radius: 15px; margin-bottom: 1.5rem; text-align: center; border: 1px solid var(--binance-color);">
-                        <p style="font-size: 1.3rem;">≈ <strong class="neon-text-green" id="usd-preview">$0.00</strong> USD</p>
-                        <p style="font-size: 0.9rem; color: var(--text-secondary);">Rate: 1 USD = {{ usd_to_inr }} INR</p>
-                    </div>
-                    
-                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin: 1.5rem 0;">
-                        <button type="button" class="btn-secondary" onclick="setAmount(1000)">₹1000 (${{ (1000/usd_to_inr)|round(2) }})</button>
-                        <button type="button" class="btn-secondary" onclick="setAmount(2000)">₹2000 (${{ (2000/usd_to_inr)|round(2) }})</button>
-                        <button type="button" class="btn-secondary" onclick="setAmount(5000)">₹5000 (${{ (5000/usd_to_inr)|round(2) }})</button>
-                        <button type="button" class="btn-secondary" onclick="setAmount(10000)">₹10000 (${{ (10000/usd_to_inr)|round(2) }})</button>
-                    </div>
-                    
-                    <div style="background: rgba(0,255,0,0.1); padding: 1.5rem; border-radius: 15px; margin-bottom: 1.5rem; text-align: center;">
-                        <p>You will get: <strong class="neon-text-green" id="credit-preview">0</strong> Credits</p>
-                    </div>
-                    
-                    <div style="text-align: center; margin-bottom: 1.5rem; padding: 1rem; background: rgba(255,255,255,0.05); border-radius: 10px;">
-                        <p style="color: var(--text-secondary);">Send payments to Binance ID:</p>
-                        <p style="font-size: 1.8rem; color: var(--accent-green); font-weight: bold;">{{ binance_address }}</p>
-                    </div>
-                    
-                    <button type="submit" class="btn-primary" style="background: linear-gradient(145deg, #f0b90b, #d4a00a);">
-                        <i class="fab fa-bitcoin"></i> Create Binance Order
-                    </button>
-                </form>
-                
-                <script>
-                const usdToInr = {{ usd_to_inr }};
-                
-                function setAmount(amount) {
-                    document.getElementById('amount-input').value = amount;
-                    updateUSD(amount);
-                    updateCredits(amount);
-                }
-                
-                function updateUSD(inr) {
-                    let usd = inr / usdToInr;
-                    document.getElementById('usd-preview').textContent = '$' + usd.toFixed(2);
-                }
-                
-                function updateCredits(amount) {
-                    let credits = amount * {{ credit_rate }};
-                    document.getElementById('credit-preview').textContent = credits.toFixed(1);
-                }
-                
-                document.getElementById('amount-input').addEventListener('input', function() {
-                    updateUSD(this.value);
-                    updateCredits(this.value);
-                });
-                
-                window.addEventListener('load', function() {
-                    let amount = document.getElementById('amount-input')?.value || {{ min_recharge }};
-                    updateUSD(amount);
-                    updateCredits(amount);
-                });
-                </script>
-                {% endif %}
-                
-                <!-- Support Section -->
-                <div class="support-section" style="margin-top: 2rem;">
-                    <h3><i class="fas fa-headset"></i> Need Help?</h3>
-                    <div class="support-grid">
-                        <a href="{{ telegram_support }}" target="_blank" class="support-card telegram">
-                            <i class="fab fa-telegram"></i>
-                            <span>Telegram Support</span>
-                            <small>Click to chat</small>
-                        </a>
-                        <a href="{{ whatsapp_channel }}" target="_blank" class="support-card whatsapp">
-                            <i class="fab fa-whatsapp"></i>
-                            <span>WhatsApp Channel</span>
-                            <small>Join for updates</small>
-                        </a>
-                    </div>
+        <div class="card" style="text-align: center; padding: 1rem;">
+            <div style="background: linear-gradient(145deg, #f0b90b, #d4a00a); padding: 1rem; border-radius: 40px; margin-bottom: 1rem;">
+                <i class="fab fa-bitcoin" style="font-size: 2rem;"></i>
+                <i class="fab fa-ethereum" style="font-size: 2rem;"></i>
+                <i class="fab fa-btc" style="font-size: 2rem;"></i>
+                <h2 style="color: black; margin-top: 0.5rem;">Crypto Payment Gateway</h2>
+                <p style="color: black;">Pay with USDT, BTC, ETH, BNB</p>
+            </div>
+
+            <!-- Crypto Checkout Iframe -->
+            <iframe 
+                src="https://binance.digamber.in/" 
+                width="100%" 
+                height="550px" 
+                style="border: none; border-radius: 12px;"
+                title="Crypto Payment Gateway">
+            </iframe>
+
+            <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(255,255,255,0.05); border-radius: 10px;">
+                <p style="color: var(--text-secondary); font-size: 0.9rem;">
+                    <i class="fas fa-shield-alt"></i> Secure payment processing via Binance
+                </p>
+                <p style="color: var(--text-secondary); font-size: 0.9rem;">
+                    <i class="fas fa-clock"></i> Payment will be confirmed automatically
+                </p>
+            </div>
+
+            <!-- Support Section -->
+            <div class="support-section" style="margin-top: 1.5rem;">
+                <h3><i class="fas fa-headset"></i> Need Help?</h3>
+                <div class="support-grid" style="grid-template-columns: 1fr 1fr;">
+                    <a href="{{ telegram_support }}" target="_blank" class="support-card telegram">
+                        <i class="fab fa-telegram"></i>
+                        <span>Telegram Support</span>
+                    </a>
+                    <a href="{{ whatsapp_channel }}" target="_blank" class="support-card whatsapp">
+                        <i class="fab fa-whatsapp"></i>
+                        <span>WhatsApp Channel</span>
+                    </a>
                 </div>
             </div>
         </div>
     </div>
+
+    <style>
+        .support-section {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            border: 1px solid var(--accent-pink);
+        }
+        .support-section h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        .support-grid {
+            display: grid;
+            gap: 1rem;
+        }
+        .support-card {
+            padding: 0.8rem;
+            border-radius: 12px;
+            text-align: center;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        .support-card i { font-size: 1.2rem; }
+        .support-card span { font-weight: bold; font-size: 0.9rem; }
+        .support-card.telegram {
+            background: linear-gradient(145deg, #0088cc, #006699);
+            color: white;
+        }
+        .support-card.whatsapp {
+            background: linear-gradient(145deg, #25D366, #128C7E);
+            color: white;
+        }
+        .support-card:hover {
+            transform: translateY(-3px);
+        }
+    </style>
 </body>
 </html>
