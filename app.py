@@ -333,6 +333,10 @@ WHATSAPP_CHANNEL = os.getenv('WHATSAPP_CHANNEL', 'WHATSAPP_CHANNEL')
 USD_TO_INR = 98
 BINANCE_ADDRESS = '814429508'
 
+# BINANCE CONFIGURATION - NEW (Method 1)
+# ============================================
+BINANCE_GATEWAY_URL = 'https://binance.digamber.in'  # Your payment gateway URL
+
 # ============================================
 # DISCORD CONFIGURATION
 # ============================================
