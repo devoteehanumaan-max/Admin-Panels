@@ -1725,6 +1725,106 @@ def access_panel():
     return render_template('premium.html',
                          telegram_support=TELEGRAM_SUPPORT_LINK,
                          whatsapp_channel=WHATSAPP_CHANNEL)
+
+# ============================================
+# CRYPTO PAYMENT API ROUTES (BINANCE GATEWAY)
+# ============================================
+
+BINANCE_GATEWAY_URL = "https://binance.digamber.in"
+
+@app.route('/api/create_crypto_order', methods=['POST'])
+def create_crypto_order():
+    if 'username' not in session:
+        return jsonify({'success': False, 'error': 'Not logged in'})
+    
+    data = request.get_json()
+    amount = data.get('amount')
+    currency = data.get('currency', 'USDT')
+    network = data.get('network', 'BSC')
+    
+    # Validate amount - only allowed values
+    allowed_amounts = [10, 20, 30, 50, 100]
+    if amount not in allowed_amounts:
+        return jsonify({'success': False, 'error': 'Invalid amount'})
+    
+    try:
+        response = requests.post(
+            f"{BINANCE_GATEWAY_URL}/api/orders",
+            json={'amount': amount, 'currency': currency, 'network': network},
+            timeout=30
+        )
+        
+        if response.status_code == 200:
+            order_data = response.json()
+            
+            # Store in database
+            credits = amount * USD_TO_INR * CREDIT_RATE
+            conn = get_db_connection()
+            c = conn.cursor()
+            c.execute('''
+                INSERT INTO payments 
+                (username, payment_method, order_id, amount, credits_added, status, date)
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
+            ''', (session['username'], 'binance', order_data.get('id'), 
+                  amount * USD_TO_INR, credits, 'pending', datetime.now()))
+            conn.commit()
+            conn.close()
+            
+            return jsonify({
+                'success': True,
+                'order_id': order_data.get('id'),
+                'qr_code': order_data.get('qr_code_base64'),
+                'address': order_data.get('deposit_address'),
+                'amount_crypto': order_data.get('unique_amount'),
+                'expires_at': order_data.get('expires_at')
+            })
+        else:
+            return jsonify({'success': False, 'error': 'Gateway error'})
+            
+    except Exception as e:
+        logging.error(f"Crypto order error: {e}")
+        return jsonify({'success': False, 'error': str(e)})
+
+@app.route('/api/check_crypto_order/<order_id>', methods=['GET'])
+def check_crypto_order(order_id):
+    if 'username' not in session:
+        return jsonify({'success': False, 'error': 'Not logged in'})
+    
+    try:
+        response = requests.get(f"{BINANCE_GATEWAY_URL}/api/orders/{order_id}", timeout=30)
+        
+        if response.status_code == 200:
+            order_data = response.json()
+            status = order_data.get('status', 'PENDING')
+            
+            # If payment completed, auto credit
+            if status == 'COMPLETED' or status == 'completed':
+                conn = get_db_connection()
+                c = conn.cursor()
+                c.execute("SELECT * FROM payments WHERE order_id = %s", (order_id,))
+                payment = c.fetchone()
+                
+                if payment and payment['status'] == 'pending':
+                    c.execute("UPDATE payments SET status = 'approved', approved_date = %s WHERE order_id = %s", 
+                             (datetime.now(), order_id))
+                    c.execute("UPDATE users SET credits = credits + %s, total_recharged = total_recharged + %s WHERE username = %s",
+                             (payment['credits_added'], payment['amount'], payment['username']))
+                    conn.commit()
+                    
+                    # Update session credits
+                    if session['username'] == payment['username']:
+                        session['credits'] = session.get('credits', 0) + payment['credits_added']
+                    
+                    return jsonify({'success': True, 'status': 'completed'})
+                conn.close()
+            
+            return jsonify({'success': True, 'status': status.lower()})
+        else:
+            return jsonify({'success': True, 'status': 'pending'})
+            
+    except Exception as e:
+        logging.error(f"Check order error: {e}")
+        return jsonify({'success': True, 'status': 'pending'})
     
 # ============================================
 # MAIN
