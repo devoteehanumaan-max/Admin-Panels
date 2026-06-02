@@ -6,6 +6,82 @@
     <title>Binance Crypto Payment - Neon Dashboard</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .amount-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+        .amount-card {
+            background: linear-gradient(145deg, #1a1a1a, #000);
+            border: 2px solid var(--accent-pink);
+            border-radius: 15px;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .amount-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-green);
+            box-shadow: 0 0 20px rgba(255,0,255,0.3);
+        }
+        .amount-card.selected {
+            background: var(--accent-green);
+            border-color: var(--accent-green);
+            color: black;
+        }
+        .amount-card.selected .amount-price {
+            color: black;
+        }
+        .amount-card.selected .amount-credits {
+            color: black;
+        }
+        .amount-price {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--accent-green);
+        }
+        .amount-usd {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+        .amount-credits {
+            font-size: 1rem;
+            color: var(--accent-pink);
+            margin-top: 0.5rem;
+        }
+        .proceed-btn {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            font-size: 1.2rem;
+        }
+        .iframe-container {
+            margin-top: 1.5rem;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .iframe-container iframe {
+            width: 100%;
+            height: 550px;
+            border: none;
+        }
+        .payment-step {
+            transition: all 0.3s ease;
+        }
+        .hidden {
+            display: none;
+        }
+        @media (max-width: 768px) {
+            .amount-options {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .iframe-container iframe {
+                height: 600px;
+            }
+        }
+    </style>
 </head>
 <body>
     <nav class="navbar">
@@ -18,37 +94,77 @@
     </nav>
 
     <div class="container">
-        <div class="card" style="text-align: center; padding: 1rem;">
-            <div style="background: linear-gradient(145deg, #f0b90b, #d4a00a); padding: 1rem; border-radius: 40px; margin-bottom: 1rem;">
-                <i class="fab fa-bitcoin" style="font-size: 2rem;"></i>
-                <i class="fab fa-ethereum" style="font-size: 2rem;"></i>
-                <i class="fab fa-btc" style="font-size: 2rem;"></i>
-                <h2 style="color: black; margin-top: 0.5rem;">Crypto Payment Gateway</h2>
+        <div class="card" style="text-align: center;">
+            <div style="background: linear-gradient(145deg, #f0b90b, #d4a00a); padding: 1rem; border-radius: 40px; margin-bottom: 1.5rem;">
+                <i class="fab fa-bitcoin" style="font-size: 2rem; margin: 0 0.3rem;"></i>
+                <i class="fab fa-ethereum" style="font-size: 2rem; margin: 0 0.3rem;"></i>
+                <i class="fab fa-btc" style="font-size: 2rem; margin: 0 0.3rem;"></i>
+                <h2 style="color: black; margin-top: 0.5rem;">Crypto Payment</h2>
                 <p style="color: black;">Pay with USDT, BTC, ETH, BNB</p>
             </div>
 
-            <!-- Crypto Checkout Iframe -->
-            <iframe 
-                src="https://binance.digamber.in/" 
-                width="100%" 
-                height="550px" 
-                style="border: none; border-radius: 12px;"
-                title="Crypto Payment Gateway">
-            </iframe>
+            <!-- Step 1: Select Amount -->
+            <div id="step-select" class="payment-step">
+                <h3><i class="fas fa-hand-pointer"></i> Select Amount</h3>
+                <div class="amount-options">
+                    <div class="amount-card" data-amount="5" data-usd="5" data-credits="{{ (5 * usd_to_inr * credit_rate)|round(1) }}">
+                        <div class="amount-price">$5</div>
+                        <div class="amount-usd">≈ ₹{{ (5 * usd_to_inr)|round(0) }}</div>
+                        <div class="amount-credits">{{ (5 * usd_to_inr * credit_rate)|round(1) }} Credits</div>
+                    </div>
+                    <div class="amount-card" data-amount="10" data-usd="10" data-credits="{{ (10 * usd_to_inr * credit_rate)|round(1) }}">
+                        <div class="amount-price">$10</div>
+                        <div class="amount-usd">≈ ₹{{ (10 * usd_to_inr)|round(0) }}</div>
+                        <div class="amount-credits">{{ (10 * usd_to_inr * credit_rate)|round(1) }} Credits</div>
+                    </div>
+                    <div class="amount-card" data-amount="20" data-usd="20" data-credits="{{ (20 * usd_to_inr * credit_rate)|round(1) }}">
+                        <div class="amount-price">$20</div>
+                        <div class="amount-usd">≈ ₹{{ (20 * usd_to_inr)|round(0) }}</div>
+                        <div class="amount-credits">{{ (20 * usd_to_inr * credit_rate)|round(1) }} Credits</div>
+                    </div>
+                    <div class="amount-card" data-amount="30" data-usd="30" data-credits="{{ (30 * usd_to_inr * credit_rate)|round(1) }}">
+                        <div class="amount-price">$30</div>
+                        <div class="amount-usd">≈ ₹{{ (30 * usd_to_inr)|round(0) }}</div>
+                        <div class="amount-credits">{{ (30 * usd_to_inr * credit_rate)|round(1) }} Credits</div>
+                    </div>
+                    <div class="amount-card" data-amount="50" data-usd="50" data-credits="{{ (50 * usd_to_inr * credit_rate)|round(1) }}">
+                        <div class="amount-price">$50</div>
+                        <div class="amount-usd">≈ ₹{{ (50 * usd_to_inr)|round(0) }}</div>
+                        <div class="amount-credits">{{ (50 * usd_to_inr * credit_rate)|round(1) }} Credits</div>
+                    </div>
+                    <div class="amount-card" data-amount="100" data-usd="100" data-credits="{{ (100 * usd_to_inr * credit_rate)|round(1) }}">
+                        <div class="amount-price">$100</div>
+                        <div class="amount-usd">≈ ₹{{ (100 * usd_to_inr)|round(0) }}</div>
+                        <div class="amount-credits">{{ (100 * usd_to_inr * credit_rate)|round(1) }} Credits</div>
+                    </div>
+                </div>
 
-            <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(255,255,255,0.05); border-radius: 10px;">
-                <p style="color: var(--text-secondary); font-size: 0.9rem;">
-                    <i class="fas fa-shield-alt"></i> Secure payment processing via Binance
-                </p>
-                <p style="color: var(--text-secondary); font-size: 0.9rem;">
-                    <i class="fas fa-clock"></i> Payment will be confirmed automatically
-                </p>
+                <button id="proceed-payment" class="btn-primary proceed-btn" disabled>
+                    <i class="fas fa-arrow-right"></i> Proceed to Payment
+                </button>
+            </div>
+
+            <!-- Step 2: Payment Iframe -->
+            <div id="step-payment" class="payment-step hidden">
+                <div class="iframe-container">
+                    <iframe 
+                        id="payment-iframe"
+                        src="" 
+                        width="100%" 
+                        height="550px" 
+                        style="border: none; border-radius: 12px;"
+                        title="Crypto Payment Gateway">
+                    </iframe>
+                </div>
+                <button id="back-to-amount" class="btn-secondary" style="margin-top: 1rem;">
+                    <i class="fas fa-arrow-left"></i> Back to Amount Selection
+                </button>
             </div>
 
             <!-- Support Section -->
             <div class="support-section" style="margin-top: 1.5rem;">
                 <h3><i class="fas fa-headset"></i> Need Help?</h3>
-                <div class="support-grid" style="grid-template-columns: 1fr 1fr;">
+                <div class="support-grid">
                     <a href="{{ telegram_support }}" target="_blank" class="support-card telegram">
                         <i class="fab fa-telegram"></i>
                         <span>Telegram Support</span>
@@ -77,6 +193,7 @@
         }
         .support-grid {
             display: grid;
+            grid-template-columns: 1fr 1fr;
             gap: 1rem;
         }
         .support-card {
@@ -103,6 +220,70 @@
         .support-card:hover {
             transform: translateY(-3px);
         }
+        .hidden {
+            display: none;
+        }
     </style>
+
+    <script>
+        let selectedAmount = null;
+        let selectedUsd = null;
+        let selectedCredits = null;
+
+        // Handle amount card selection
+        document.querySelectorAll('.amount-card').forEach(card => {
+            card.addEventListener('click', function() {
+                // Remove selected class from all cards
+                document.querySelectorAll('.amount-card').forEach(c => c.classList.remove('selected'));
+                
+                // Add selected class to clicked card
+                this.classList.add('selected');
+                
+                // Store selected values
+                selectedAmount = this.dataset.amount;
+                selectedUsd = this.dataset.usd;
+                selectedCredits = this.dataset.credits;
+                
+                // Enable proceed button
+                document.getElementById('proceed-payment').disabled = false;
+            });
+        });
+
+        // Proceed to payment
+        document.getElementById('proceed-payment').addEventListener('click', function() {
+            if (!selectedAmount) {
+                alert('Please select an amount first');
+                return;
+            }
+
+            // Build iframe URL with amount parameter
+            const iframeUrl = `https://binance.digamber.in/?amount=${selectedUsd}`;
+            document.getElementById('payment-iframe').src = iframeUrl;
+            
+            // Show payment step, hide selection step
+            document.getElementById('step-select').classList.add('hidden');
+            document.getElementById('step-payment').classList.remove('hidden');
+        });
+
+        // Back to amount selection
+        document.getElementById('back-to-amount').addEventListener('click', function() {
+            document.getElementById('step-payment').classList.add('hidden');
+            document.getElementById('step-select').classList.remove('hidden');
+            document.getElementById('payment-iframe').src = '';
+        });
+
+        // Listen for messages from iframe (payment success)
+        window.addEventListener('message', function(event) {
+            if (event.origin !== 'https://binance.digamber.in') return;
+            
+            const data = event.data;
+            if (data.type === 'payment_success') {
+                alert('✅ Payment Successful! Credits will be added shortly.');
+                setTimeout(() => {
+                    window.location.href = "{{ url_for('user_dashboard') }}";
+                }, 2000);
+            }
+        });
+    </script>
 </body>
 </html>
