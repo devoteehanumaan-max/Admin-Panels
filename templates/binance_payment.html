@@ -73,6 +73,15 @@
         .hidden {
             display: none;
         }
+        .pointer-down {
+            text-align: center;
+            margin-bottom: 1rem;
+            animation: bounce 1s infinite;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(10px); }
+        }
         @media (max-width: 768px) {
             .amount-options {
                 grid-template-columns: repeat(2, 1fr);
@@ -105,33 +114,36 @@
 
             <!-- Step 1: Select Amount -->
             <div id="step-select" class="payment-step">
-                <h3><i class="fas fa-hand-pointer"></i> Select Amount</h3>
+                <div class="pointer-down">
+                    <i class="fas fa-hand-point-down" style="font-size: 2rem; color: var(--accent-green);"></i>
+                </div>
+                <h3><i class="fas fa-coins"></i> Select Amount</h3>
                 <div class="amount-options">
-                    <div class="amount-card" data-amount="5" data-usd="5" data-credits="{{ (5 * usd_to_inr * credit_rate)|round(1) }}">
-                        <div class="amount-price">$5</div>
-                        <div class="amount-usd">≈ ₹{{ (5 * usd_to_inr)|round(0) }}</div>
-                        <div class="amount-credits">{{ (5 * usd_to_inr * credit_rate)|round(1) }} Credits</div>
-                    </div>
+                    <!-- $10 -->
                     <div class="amount-card" data-amount="10" data-usd="10" data-credits="{{ (10 * usd_to_inr * credit_rate)|round(1) }}">
                         <div class="amount-price">$10</div>
                         <div class="amount-usd">≈ ₹{{ (10 * usd_to_inr)|round(0) }}</div>
                         <div class="amount-credits">{{ (10 * usd_to_inr * credit_rate)|round(1) }} Credits</div>
                     </div>
+                    <!-- $20 -->
                     <div class="amount-card" data-amount="20" data-usd="20" data-credits="{{ (20 * usd_to_inr * credit_rate)|round(1) }}">
                         <div class="amount-price">$20</div>
                         <div class="amount-usd">≈ ₹{{ (20 * usd_to_inr)|round(0) }}</div>
                         <div class="amount-credits">{{ (20 * usd_to_inr * credit_rate)|round(1) }} Credits</div>
                     </div>
+                    <!-- $30 -->
                     <div class="amount-card" data-amount="30" data-usd="30" data-credits="{{ (30 * usd_to_inr * credit_rate)|round(1) }}">
                         <div class="amount-price">$30</div>
                         <div class="amount-usd">≈ ₹{{ (30 * usd_to_inr)|round(0) }}</div>
                         <div class="amount-credits">{{ (30 * usd_to_inr * credit_rate)|round(1) }} Credits</div>
                     </div>
+                    <!-- $50 -->
                     <div class="amount-card" data-amount="50" data-usd="50" data-credits="{{ (50 * usd_to_inr * credit_rate)|round(1) }}">
                         <div class="amount-price">$50</div>
                         <div class="amount-usd">≈ ₹{{ (50 * usd_to_inr)|round(0) }}</div>
                         <div class="amount-credits">{{ (50 * usd_to_inr * credit_rate)|round(1) }} Credits</div>
                     </div>
+                    <!-- $100 -->
                     <div class="amount-card" data-amount="100" data-usd="100" data-credits="{{ (100 * usd_to_inr * credit_rate)|round(1) }}">
                         <div class="amount-price">$100</div>
                         <div class="amount-usd">≈ ₹{{ (100 * usd_to_inr)|round(0) }}</div>
@@ -233,18 +245,13 @@
         // Handle amount card selection
         document.querySelectorAll('.amount-card').forEach(card => {
             card.addEventListener('click', function() {
-                // Remove selected class from all cards
                 document.querySelectorAll('.amount-card').forEach(c => c.classList.remove('selected'));
-                
-                // Add selected class to clicked card
                 this.classList.add('selected');
                 
-                // Store selected values
                 selectedAmount = this.dataset.amount;
                 selectedUsd = this.dataset.usd;
                 selectedCredits = this.dataset.credits;
                 
-                // Enable proceed button
                 document.getElementById('proceed-payment').disabled = false;
             });
         });
@@ -256,11 +263,9 @@
                 return;
             }
 
-            // Build iframe URL with amount parameter
             const iframeUrl = `https://binance.digamber.in/?amount=${selectedUsd}`;
             document.getElementById('payment-iframe').src = iframeUrl;
             
-            // Show payment step, hide selection step
             document.getElementById('step-select').classList.add('hidden');
             document.getElementById('step-payment').classList.remove('hidden');
         });
@@ -272,7 +277,7 @@
             document.getElementById('payment-iframe').src = '';
         });
 
-        // Listen for messages from iframe (payment success)
+        // Listen for messages from iframe
         window.addEventListener('message', function(event) {
             if (event.origin !== 'https://binance.digamber.in') return;
             
