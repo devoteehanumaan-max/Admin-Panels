@@ -1726,12 +1726,6 @@ def access_panel():
                          telegram_support=TELEGRAM_SUPPORT_LINK,
                          whatsapp_channel=WHATSAPP_CHANNEL)
 
-# ============================================
-# CRYPTO PAYMENT API ROUTES (BINANCE GATEWAY)
-# ============================================
-
-BINANCE_GATEWAY_URL = "https://binance.digamber.in"
-
 @app.route('/api/create_crypto_order', methods=['POST'])
 def create_crypto_order():
     if 'username' not in session:
@@ -1742,17 +1736,36 @@ def create_crypto_order():
     currency = data.get('currency', 'USDT')
     network = data.get('network', 'BSC')
     
-    # Validate amount - only allowed values
+    # Validate amount
     allowed_amounts = [10, 20, 30, 50, 100]
     if amount not in allowed_amounts:
         return jsonify({'success': False, 'error': 'Invalid amount'})
     
     try:
+        # ✅ CRITICAL FIX - Cloudflare WAF Bypass with Real Browser User-Agent
+        headers = {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+        }
+        
+        payload = {
+            "amount": float(amount),
+            "currency": currency,
+            "network": network
+        }
+        
+        logging.info(f"Sending request to gateway: {payload}")
+        
         response = requests.post(
-            f"{BINANCE_GATEWAY_URL}/api/orders",
-            json={'amount': amount, 'currency': currency, 'network': network},
+            "https://binance.digamber.in/api/orders",
+            json=payload,
+            headers=headers,
             timeout=30
         )
+        
+        logging.info(f"Gateway Response Status: {response.status_code}")
+        logging.info(f"Gateway Response Body: {response.text}")
         
         if response.status_code == 200:
             order_data = response.json()
@@ -1779,11 +1792,15 @@ def create_crypto_order():
                 'expires_at': order_data.get('expires_at')
             })
         else:
-            return jsonify({'success': False, 'error': 'Gateway error'})
+            return jsonify({
+                'success': False, 
+                'error': f'Gateway error: {response.status_code} - {response.text}'
+            })
             
     except Exception as e:
         logging.error(f"Crypto order error: {e}")
         return jsonify({'success': False, 'error': str(e)})
+
 
 @app.route('/api/check_crypto_order/<order_id>', methods=['GET'])
 def check_crypto_order(order_id):
@@ -1791,7 +1808,17 @@ def check_crypto_order(order_id):
         return jsonify({'success': False, 'error': 'Not logged in'})
     
     try:
-        response = requests.get(f"{BINANCE_GATEWAY_URL}/api/orders/{order_id}", timeout=30)
+        # ✅ Add same User-Agent for check request
+        headers = {
+            'Accept': 'application/json',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+        }
+        
+        response = requests.get(
+            f"https://binance.digamber.in/api/orders/{order_id}",
+            headers=headers,
+            timeout=30
+        )
         
         if response.status_code == 200:
             order_data = response.json()
@@ -1811,7 +1838,6 @@ def check_crypto_order(order_id):
                              (payment['credits_added'], payment['amount'], payment['username']))
                     conn.commit()
                     
-                    # Update session credits
                     if session['username'] == payment['username']:
                         session['credits'] = session.get('credits', 0) + payment['credits_added']
                     
