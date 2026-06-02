@@ -43,14 +43,16 @@
             font-weight: bold;
             color: var(--accent-green);
         }
-        .amount-usd {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-        }
         .amount-credits {
             font-size: 1rem;
             color: var(--accent-pink);
             margin-top: 0.5rem;
+        }
+        .proceed-btn {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            font-size: 1.2rem;
+            width: 100%;
         }
         .payment-details {
             margin-top: 2rem;
@@ -77,14 +79,14 @@
             word-break: break-all;
             font-family: monospace;
             margin: 1rem 0;
-            font-size: 1.1rem;
+            font-size: 1rem;
         }
         .amount-box {
             background: rgba(0,255,0,0.1);
             padding: 1rem;
             border-radius: 12px;
             text-align: center;
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             font-weight: bold;
             color: var(--accent-green);
             margin: 1rem 0;
@@ -93,10 +95,11 @@
             background: var(--accent-pink);
             color: black;
             border: none;
-            padding: 0.5rem 1rem;
+            padding: 0.3rem 0.8rem;
             border-radius: 8px;
             cursor: pointer;
             margin-left: 0.5rem;
+            font-size: 0.8rem;
         }
         .loading {
             text-align: center;
@@ -105,14 +108,26 @@
         .hidden {
             display: none;
         }
-        .pointer-down {
+        .status-checking {
             text-align: center;
-            margin-bottom: 0.5rem;
-            animation: bounce 1s infinite;
+            padding: 1rem;
+            margin-top: 1rem;
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
         }
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(8px); }
+        .success-message {
+            background: linear-gradient(145deg, #00cc00, #009900);
+            color: white;
+            padding: 1rem;
+            border-radius: 12px;
+            text-align: center;
+        }
+        .error-message {
+            background: linear-gradient(145deg, #ff4444, #cc0000);
+            color: white;
+            padding: 1rem;
+            border-radius: 12px;
+            text-align: center;
         }
         @media (max-width: 768px) {
             .amount-options {
@@ -147,9 +162,6 @@
 
             <!-- Step 1: Select Amount -->
             <div id="step-select">
-                <div class="pointer-down">
-                    <i class="fas fa-hand-point-down" style="font-size: 2rem; color: var(--accent-green);"></i>
-                </div>
                 <h3><i class="fas fa-coins"></i> Select Amount</h3>
                 <div class="amount-options">
                     <div class="amount-card" data-amount="10" data-usd="10" data-credits="{{ (10 * usd_to_inr * credit_rate)|round(1) }}">
@@ -173,9 +185,13 @@
                         <div class="amount-credits">{{ (100 * usd_to_inr * credit_rate)|round(1) }} Credits</div>
                     </div>
                 </div>
+
+                <button id="proceed-payment" class="btn-primary proceed-btn" disabled>
+                    <i class="fas fa-arrow-right"></i> Proceed to Payment
+                </button>
             </div>
 
-            <!-- Step 2: Payment Details (Direct Show) -->
+            <!-- Step 2: Payment Details -->
             <div id="payment-details" class="payment-details hidden">
                 <div class="loading" id="payment-loading">
                     <i class="fas fa-spinner fa-spin" style="font-size: 2rem;"></i>
@@ -194,12 +210,14 @@
                         <span id="payment-address">Loading...</span>
                         <button class="copy-btn" onclick="copyAddress()">Copy</button>
                     </div>
-                    <div class="status-checking" id="status-checking">
-                        <i class="fas fa-clock"></i>
-                        <p>Waiting for payment confirmation...</p>
-                        <p style="font-size: 0.8rem;">Payment expires in 10 minutes</p>
+                    <div id="status-container">
+                        <div class="status-checking" id="status-checking">
+                            <i class="fas fa-clock"></i>
+                            <p>Waiting for payment confirmation...</p>
+                            <p style="font-size: 0.8rem;">Payment expires in 10 minutes</p>
+                        </div>
                     </div>
-                    <button id="back-to-amount" class="btn-secondary" style="margin-top: 1rem;">
+                    <button id="back-to-amount" class="btn-secondary" style="margin-top: 1rem; width: 100%;">
                         <i class="fas fa-arrow-left"></i> Back to Amount Selection
                     </button>
                 </div>
@@ -267,13 +285,6 @@
         .hidden {
             display: none;
         }
-        .status-checking {
-            text-align: center;
-            padding: 1rem;
-            margin-top: 1rem;
-            background: rgba(0,0,0,0.3);
-            border-radius: 10px;
-        }
     </style>
 
     <script>
@@ -282,33 +293,38 @@
         let selectedAmount = null;
         let selectedUsd = null;
 
-        // Handle amount card click - DIRECTLY GENERATE PAYMENT
+        // Handle amount card selection
         document.querySelectorAll('.amount-card').forEach(card => {
-            card.addEventListener('click', async function() {
-                // Remove selected class from all
+            card.addEventListener('click', function() {
                 document.querySelectorAll('.amount-card').forEach(c => c.classList.remove('selected'));
                 this.classList.add('selected');
                 
                 selectedAmount = this.dataset.amount;
                 selectedUsd = this.dataset.usd;
                 
-                // Directly generate payment for this amount
-                await generatePayment(selectedUsd);
+                document.getElementById('proceed-payment').disabled = false;
             });
         });
 
-        async function generatePayment(amountUSD) {
-            // Show payment details section with loading
+        // Proceed to payment button - CREATE ORDER VIA API
+        document.getElementById('proceed-payment').addEventListener('click', async function() {
+            if (!selectedUsd) {
+                alert('Please select an amount first');
+                return;
+            }
+
+            // Show payment section with loading
+            document.getElementById('step-select').classList.add('hidden');
             document.getElementById('payment-details').classList.remove('hidden');
             document.getElementById('payment-loading').classList.remove('hidden');
             document.getElementById('payment-content').classList.add('hidden');
-            
+
             try {
                 const response = await fetch('/api/create_crypto_order', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
-                        amount: parseFloat(amountUSD), 
+                        amount: parseFloat(selectedUsd), 
                         currency: 'USDT', 
                         network: 'BSC' 
                     })
@@ -319,8 +335,8 @@
                 if (data.success) {
                     currentOrderId = data.order_id;
                     
-                    // Show payment details
-                    document.getElementById('qr-image').src = 'data:image/png;base64,' + data.qr_code;
+                    // Display QR and address
+                    document.getElementById('qr-image').src = data.qr_code;
                     document.getElementById('payment-address').innerText = data.address;
                     document.getElementById('pay-amount').innerText = data.amount_crypto;
                     
@@ -331,14 +347,14 @@
                     // Start checking payment status
                     startPaymentCheck();
                 } else {
-                    alert('Error: ' + (data.error || 'Failed to create order'));
-                    document.getElementById('payment-details').classList.add('hidden');
+                    throw new Error(data.error || 'Failed to create order');
                 }
             } catch (error) {
-                alert('Network error. Please try again.');
+                alert('Error: ' + error.message);
+                document.getElementById('step-select').classList.remove('hidden');
                 document.getElementById('payment-details').classList.add('hidden');
             }
-        }
+        });
 
         function startPaymentCheck() {
             let attempts = 0;
@@ -346,13 +362,15 @@
             
             checkInterval = setInterval(async () => {
                 attempts++;
-                if (attempts > 120) { // 10 minutes timeout
+                
+                // Timeout after 10 minutes (120 attempts * 5 seconds)
+                if (attempts > 120) {
                     clearInterval(checkInterval);
-                    document.getElementById('status-checking').innerHTML = `
+                    document.getElementById('status-container').innerHTML = `
                         <div class="error-message">
                             <i class="fas fa-clock"></i>
                             <p>Payment expired. Please try again.</p>
-                            <button class="btn-primary" onclick="location.reload()">Try Again</button>
+                            <button class="btn-primary" onclick="location.reload()" style="margin-top: 0.5rem;">Try Again</button>
                         </div>
                     `;
                     return;
@@ -364,19 +382,19 @@
                     
                     if (data.status === 'completed') {
                         clearInterval(checkInterval);
-                        document.getElementById('status-checking').innerHTML = `
+                        document.getElementById('status-container').innerHTML = `
                             <div class="success-message">
                                 <i class="fas fa-check-circle" style="font-size: 2rem;"></i>
                                 <h3>✅ PAYMENT RECEIVED!</h3>
                                 <p>Credits have been added to your account.</p>
-                                <a href="{{ url_for('user_dashboard') }}" class="btn-primary" style="margin-top: 1rem;">Go to Dashboard</a>
+                                <a href="{{ url_for('user_dashboard') }}" class="btn-primary" style="margin-top: 0.5rem; display: inline-block;">Go to Dashboard</a>
                             </div>
                         `;
                     }
                 } catch (error) {
-                    console.error('Check error:', error);
+                    console.error('Status check error:', error);
                 }
-            }, 5000);
+            }, 5000); // Check every 5 seconds
         }
 
         function copyAddress() {
@@ -390,6 +408,11 @@
             if (checkInterval) clearInterval(checkInterval);
             document.getElementById('payment-details').classList.add('hidden');
             document.getElementById('step-select').classList.remove('hidden');
+            
+            // Reset selected card highlight
+            document.querySelectorAll('.amount-card').forEach(c => c.classList.remove('selected'));
+            selectedUsd = null;
+            document.getElementById('proceed-payment').disabled = true;
         });
     </script>
 </body>
