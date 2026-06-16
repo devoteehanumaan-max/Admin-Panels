@@ -9,77 +9,94 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body class="auth-body">
-    <!-- PropellerAds - Banner Ad -->
     <script async src="https://www.profitableratecpm.com/11001691/invoke.js"
-        data-cfasync="false"
-        type="text/javascript">
-    </script>
+        data-cfasync="false" type="text/javascript"></script>
 
     <div class="auth-container">
         <img src="https://i.ibb.co/1GBn25c5/VID-20260310-172522-610-ezgif-com-video-to-gif-converter.gif" alt="Logo" class="logo">
         <h2><i class="fas fa-user-plus"></i> Create Account</h2>
-        
+
         <div class="discord-warning">
-            <i class="fab fa-discord" style="font-size: 1.5rem;"></i>
+            <i class="fab fa-discord" style="font-size:1.5rem;"></i>
             <strong>Join our Discord first!</strong>
-            <p style="margin-top: 0.3rem; font-size: 0.8rem;">You must join our Discord server before registering</p>
-            <a href="{{ discord_invite }}" target="_blank" class="btn-small" style="background: white; color: #5865F2;">Join Discord</a>
+            <p style="margin-top:0.3rem;font-size:0.8rem;">You must join our Discord server before registering</p>
+            <a href="{{ discord_invite }}" target="_blank" class="btn-small" style="background:white;color:#5865F2;">Join Discord</a>
         </div>
-        
+
         {% if error %}
         <div class="error-message">{{ error }}</div>
         {% endif %}
-        
+
         <form method="POST" action="{{ url_for('register') }}">
             <div class="form-group">
                 <label for="username"><i class="fas fa-user"></i> Username</label>
-                <input type="text" id="username" name="username" placeholder="Choose a username" required>
+                <input type="text" id="username" name="username" placeholder="Choose a username" required autocomplete="username">
             </div>
-            
+
             <div class="form-group">
                 <label for="discord_id"><i class="fab fa-discord"></i> Discord User ID</label>
                 <input type="text" id="discord_id" name="discord_id" placeholder="Enter your Discord User ID" required>
-                <small><a href="https://support.discord.com/hc/en-us/articles/206346498" target="_blank" style="color: var(--accent-pink);">How to find Discord ID?</a></small>
+                <small><a href="https://support.discord.com/hc/en-us/articles/206346498" target="_blank" style="color:var(--accent-pink);">How to find Discord ID?</a></small>
             </div>
-            
+
             <div class="form-group">
                 <label for="password"><i class="fas fa-lock"></i> Password</label>
-                <input type="password" id="password" name="password" placeholder="Min 6 characters" required>
+                <div class="password-wrapper">
+                    <input type="password" id="password" name="password" placeholder="Min 6 characters" required autocomplete="new-password">
+                    <button type="button" class="password-toggle" title="Show/hide password">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
             </div>
-            
+
             <div class="form-group">
                 <label for="confirm_password"><i class="fas fa-lock"></i> Confirm Password</label>
-                <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm password" required>
+                <div class="password-wrapper">
+                    <input type="password" id="confirm_password" name="confirm_password" placeholder="Re-enter your password" required autocomplete="new-password">
+                    <button type="button" class="password-toggle" title="Show/hide password">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+                <small id="pw-match-hint" style="font-size:0.8rem;margin-top:4px;display:block;"></small>
             </div>
-            
+
             <button type="submit" class="btn-primary">
                 <i class="fas fa-user-plus"></i> Register
             </button>
         </form>
-        
+
         <p class="auth-link">Already have an account? <a href="{{ url_for('login') }}">Login here</a></p>
 
-        <!-- Footer Links - Privacy & Terms (Bottom mein) -->
-        <div style="text-align: center; margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
-            <a href="{{ url_for('privacy') }}" style="color: var(--accent-pink); text-decoration: none; margin: 0 0.5rem; font-size: 0.8rem;">Privacy Policy</a>
-            <a href="{{ url_for('terms') }}" style="color: var(--accent-pink); text-decoration: none; margin: 0 0.5rem; font-size: 0.8rem;">Terms of Service</a>
+        <div style="text-align:center;margin-top:2rem;padding-top:1rem;border-top:1px solid var(--border-color);">
+            <a href="{{ url_for('privacy') }}" style="color:var(--accent-pink);text-decoration:none;margin:0 0.5rem;font-size:0.8rem;">Privacy Policy</a>
+            <a href="{{ url_for('terms') }}" style="color:var(--accent-pink);text-decoration:none;margin:0 0.5rem;font-size:0.8rem;">Terms of Service</a>
         </div>
     </div>
 
     <style>
-        .discord-warning {
-            background: linear-gradient(145deg, #5865F2, #404EED);
-            padding: 0.8rem;
-            border-radius: 10px;
-            margin-bottom: 1rem;
-            text-align: center;
-        }
-        .btn-small {
-            padding: 0.3rem 0.8rem;
-            border-radius: 20px;
-            text-decoration: none;
-            font-size: 0.7rem;
-        }
+        .discord-warning { background:linear-gradient(145deg,#5865F2,#404EED);padding:0.8rem;border-radius:10px;margin-bottom:1rem;text-align:center; }
+        .btn-small { padding:0.3rem 0.8rem;border-radius:20px;text-decoration:none;font-size:0.7rem; }
     </style>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+    <script>
+        // Inline: live password match hint on register page
+        const pw  = document.getElementById('password');
+        const pw2 = document.getElementById('confirm_password');
+        const hint = document.getElementById('pw-match-hint');
+        function checkMatch() {
+            if (!pw2.value) { hint.textContent = ''; return; }
+            if (pw2.value === pw.value) {
+                hint.textContent = '✅ Passwords match';
+                hint.style.color = 'var(--accent-green)';
+            } else {
+                hint.textContent = '❌ Passwords do not match';
+                hint.style.color = 'var(--accent-red)';
+            }
+        }
+        pw2.addEventListener('input', checkMatch);
+        pw.addEventListener('input', checkMatch);
+    </script>
 </body>
 </html>
