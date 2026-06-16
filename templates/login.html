@@ -9,41 +9,42 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body class="auth-body">
-    <!-- PropellerAds - Banner Ad -->
     <script async src="https://www.profitableratecpm.com/11001691/invoke.js"
-        data-cfasync="false"
-        type="text/javascript">
-    </script>
+        data-cfasync="false" type="text/javascript"></script>
 
     <div class="auth-container">
         <img src="https://i.ibb.co/1GBn25c5/VID-20260310-172522-610-ezgif-com-video-to-gif-converter.gif" alt="Logo" class="logo">
         <h2><i class="fas fa-sign-in-alt"></i> Login to Dashboard</h2>
-        
+
         {% if error %}
         <div class="error-message">{{ error }}</div>
         {% endif %}
-        
+
         <form method="POST" action="{{ url_for('login') }}">
             <div class="form-group">
                 <label for="username"><i class="fas fa-user"></i> Username</label>
-                <input type="text" id="username" name="username" placeholder="Enter your username" required>
+                <input type="text" id="username" name="username" placeholder="Enter your username" required autocomplete="username">
             </div>
-            
+
             <div class="form-group">
                 <label for="password"><i class="fas fa-lock"></i> Password</label>
-                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                <div class="password-wrapper">
+                    <input type="password" id="password" name="password" placeholder="Enter your password" required autocomplete="current-password">
+                    <button type="button" class="password-toggle" title="Show/hide password">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
             </div>
-            
+
             <button type="submit" class="btn-primary">
                 <i class="fas fa-sign-in-alt"></i> Login
             </button>
         </form>
-        
+
         <p class="auth-link">
             Don't have an account? <a href="{{ url_for('register') }}">Register here</a>
         </p>
-        
-        <!-- Support Section -->
+
         <div class="support-section">
             <h3><i class="fas fa-headset"></i> Need Help?</h3>
             <div class="support-grid">
@@ -58,56 +59,25 @@
             </div>
         </div>
 
-        <!-- Footer Links - Privacy & Terms (Bottom mein) -->
-        <div style="text-align: center; margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
-            <a href="{{ url_for('privacy') }}" style="color: var(--accent-pink); text-decoration: none; margin: 0 0.5rem; font-size: 0.8rem;">Privacy Policy</a>
-            <a href="{{ url_for('terms') }}" style="color: var(--accent-pink); text-decoration: none; margin: 0 0.5rem; font-size: 0.8rem;">Terms of Service</a>
+        <div style="text-align:center;margin-top:2rem;padding-top:1rem;border-top:1px solid var(--border-color);">
+            <a href="{{ url_for('privacy') }}" style="color:var(--accent-pink);text-decoration:none;margin:0 0.5rem;font-size:0.8rem;">Privacy Policy</a>
+            <a href="{{ url_for('terms') }}" style="color:var(--accent-pink);text-decoration:none;margin:0 0.5rem;font-size:0.8rem;">Terms of Service</a>
         </div>
     </div>
 
     <style>
-        .support-section {
-            margin-top: 2rem;
-            padding: 1rem;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 15px;
-            border: 1px solid var(--accent-pink);
-        }
-        .support-section h3 {
-            font-size: 1.2rem;
-            margin-bottom: 1rem;
-            text-align: center;
-        }
-        .support-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
-        .support-card {
-            padding: 0.8rem;
-            border-radius: 12px;
-            text-align: center;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.3rem;
-        }
-        .support-card i { font-size: 1.5rem; }
-        .support-card span { font-weight: bold; font-size: 0.8rem; }
-        .support-card.telegram {
-            background: linear-gradient(145deg, #0088cc, #006699);
-            color: white;
-        }
-        .support-card.whatsapp {
-            background: linear-gradient(145deg, #25D366, #128C7E);
-            color: white;
-        }
-        .support-card:hover { transform: translateY(-3px); }
-        @media (max-width: 480px) {
-            .support-grid { grid-template-columns: 1fr; }
-        }
+        .support-section { margin-top:2rem;padding:1rem;background:rgba(0,0,0,0.3);border-radius:15px;border:1px solid var(--accent-pink); }
+        .support-section h3 { font-size:1.2rem;margin-bottom:1rem;text-align:center; }
+        .support-grid { display:grid;grid-template-columns:1fr 1fr;gap:1rem; }
+        .support-card { padding:0.8rem;border-radius:12px;text-align:center;text-decoration:none;transition:all 0.3s ease;display:flex;flex-direction:column;align-items:center;gap:0.3rem; }
+        .support-card i { font-size:1.5rem; }
+        .support-card span { font-weight:bold;font-size:0.8rem; }
+        .support-card.telegram { background:linear-gradient(145deg,#0088cc,#006699);color:white; }
+        .support-card.whatsapp { background:linear-gradient(145deg,#25D366,#128C7E);color:white; }
+        .support-card:hover { transform:translateY(-3px); }
+        @media (max-width:480px) { .support-grid { grid-template-columns:1fr; } }
     </style>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
