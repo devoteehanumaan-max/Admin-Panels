@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* Premium Button Styles */
         .btn-premium {
             display: inline-flex;
             align-items: center;
@@ -19,26 +18,22 @@
             text-decoration: none;
             border-radius: 12px;
             font-weight: bold;
-            box-shadow: 0 0 12px rgba(255, 0, 204, 0.5);
+            box-shadow: 0 0 12px rgba(255,0,204,0.5);
             transition: all 0.3s ease;
             border: none;
             cursor: pointer;
             min-width: 160px;
         }
-        
         .btn-premium:hover {
             transform: translateY(-2px);
-            box-shadow: 0 0 18px rgba(255, 0, 204, 0.8);
+            box-shadow: 0 0 22px rgba(255,0,204,0.8);
         }
-        
         .nav-buttons {
             display: flex;
             flex-direction: column;
             gap: 10px;
             align-items: center;
         }
-        
-        /* Footer Links */
         .footer-links {
             text-align: center;
             padding: 1rem;
@@ -47,14 +42,8 @@
             font-size: 0.8rem;
             border-top: 1px solid var(--border-color);
         }
-        .footer-links a {
-            color: var(--accent-pink);
-            text-decoration: none;
-            margin: 0 0.5rem;
-        }
-        .footer-links a:hover {
-            color: var(--accent-green);
-        }
+        .footer-links a { color: var(--accent-pink); text-decoration: none; margin: 0 0.5rem; }
+        .footer-links a:hover { color: var(--accent-green); }
     </style>
 </head>
 <body>
@@ -80,6 +69,7 @@
 
     <div class="container">
         <div class="dashboard-grid">
+
             <!-- Credits Card -->
             <div class="card">
                 <h2><i class="fas fa-coins"></i> Your Credits</h2>
@@ -97,17 +87,17 @@
                     <select id="product-select" class="product-dropdown">
                         <option value="">Choose a product...</option>
                         {% for product in products %}
-                        <option value="{{ product.id }}" 
-                                data-cost="{{ product.credit_cost_per_day }}" 
+                        <option value="{{ product.id }}"
+                                data-cost="{{ product.credit_cost_per_day }}"
                                 data-price="{{ product.price_per_day }}"
                                 data-type="{{ product.key_type }}">
-                            {{ product.name }} - {{ product.credit_cost_per_day }} credits/day
+                            {{ product.name }} — {{ product.credit_cost_per_day }} credits/day
                         </option>
                         {% endfor %}
                     </select>
                 </div>
 
-                <div id="days-selection" style="display: none;">
+                <div id="days-selection" style="display:none;">
                     <div class="form-group">
                         <label>Duration:</label>
                         <select id="days-select" class="days-dropdown">
@@ -121,32 +111,35 @@
                         </select>
                     </div>
                 </div>
-                
-                <div id="product-details" class="product-details" style="display: none;">
+
+                <div id="product-details" class="product-details" style="display:none;">
                     <p>Credits per day: <span id="cost-per-day"></span></p>
                     <hr>
                     <p><strong>Total Credits Needed: <span id="total-credits" class="neon-text-green"></span></strong></p>
-                    
-                    <div id="discount-info" style="margin-top: 15px; padding: 12px; background: rgba(255,255,255,0.08); border-radius: 10px; border-left: 3px solid var(--accent-yellow);">
-                        <p style="font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 5px;">
-                            <i class="fas fa-tag"></i> Original Price: <span id="original-price" style="color: var(--accent-yellow); font-weight: bold;">0</span> credits
+
+                    <div id="discount-info" style="margin-top:12px;padding:11px;background:rgba(255,255,255,0.06);border-radius:10px;border-left:3px solid var(--accent-yellow);">
+                        <p style="font-size:0.92rem;color:var(--text-secondary);margin-bottom:4px;">
+                            <i class="fas fa-tag"></i> Original: <span id="original-price" style="color:var(--accent-yellow);font-weight:bold;">0</span> credits
                         </p>
-                        <p style="font-size: 0.95rem; color: var(--text-secondary);">
-                            <i class="fas fa-gift" style="color: var(--accent-green);"></i> You Save: <span id="savings" style="color: var(--accent-green); font-weight: bold;">0</span> credits
+                        <p style="font-size:0.92rem;color:var(--text-secondary);">
+                            <i class="fas fa-gift" style="color:var(--accent-green);"></i> You Save: <span id="savings" style="color:var(--accent-green);font-weight:bold;">0</span> credits
                         </p>
-                        <p style="font-size: 0.85rem; color: var(--accent-pink); margin-top: 8px;">
-                            ⚡ ULTRA DISCOUNT: Longer duration = Better savings!
-                        </p>
+                        <p style="font-size:0.82rem;color:var(--accent-pink);margin-top:7px;">⚡ Longer duration = Better savings!</p>
                     </div>
-                    
-                    <button id="generate-key" class="btn-primary" disabled>
+
+                    <button id="generate-key" class="btn-primary" disabled style="margin-top:1rem;">
                         <i class="fas fa-magic"></i> Generate Key
                     </button>
                 </div>
-                
-                <div id="generated-key" class="generated-key" style="display: none;">
-                    <h3>Your Key/Credentials:</h3>
-                    <div class="key-display" style="white-space: pre-line;"></div>
+
+                <!-- Generated Key Display -->
+                <div id="generated-key" class="generated-key" style="display:none;">
+                    <h3><i class="fas fa-key"></i> Your Key / Credentials:</h3>
+                    <div class="key-display" style="white-space:pre-line;"></div>
+                    <button id="copy-key-btn">
+                        <i class="fas fa-copy"></i> Copy Key
+                    </button>
+                    <p id="reload-hint"></p>
                 </div>
             </div>
 
@@ -166,7 +159,7 @@
                     <table>
                         <thead>
                             <tr>
-                                <th>Key/Credentials</th>
+                                <th>Key / Credentials</th>
                                 <th>Product</th>
                                 <th>Days</th>
                                 <th>Credits Used</th>
@@ -189,14 +182,10 @@
                                         {% else %}
                                             {{ license.expiry_date[:16] }}
                                         {% endif %}
-                                    {% else %}
-                                        N/A
-                                    {% endif %}
+                                    {% else %}N/A{% endif %}
                                 </td>
                                 <td>
-                                    <span class="status-badge status-{{ license.status }}">
-                                        {{ license.status }}
-                                    </span>
+                                    <span class="status-badge status-{{ license.status }}">{{ license.status }}</span>
                                 </td>
                                 <td>
                                     <button class="btn-small btn-hwid-reset" data-license-id="{{ license.id }}">
@@ -206,7 +195,7 @@
                             </tr>
                             {% else %}
                             <tr>
-                                <td colspan="7" style="text-align: center; color: var(--text-secondary);">
+                                <td colspan="7" style="text-align:center;color:var(--text-secondary);">
                                     No keys generated yet
                                 </td>
                             </tr>
@@ -217,14 +206,14 @@
             </div>
 
             <!-- Payment History -->
-            <div class="card full-width" style="margin-top: 1rem;">
+            <div class="card full-width" style="margin-top:1rem;">
                 <h2><i class="fas fa-credit-card"></i> Your Payment History</h2>
                 <div class="table-container">
                     <table>
                         <thead>
                             <tr>
                                 <th>Method</th>
-                                <th>UTR/Order ID</th>
+                                <th>UTR / Order ID</th>
                                 <th>Amount</th>
                                 <th>Credits</th>
                                 <th>Date</th>
@@ -237,7 +226,7 @@
                             <tr>
                                 <td>
                                     {% if payment.payment_method == 'binance' %}
-                                    <span class="key-type-badge" style="background: #f0b90b; color: black;">BINANCE</span>
+                                    <span class="key-type-badge" style="background:#f0b90b;color:black;">BINANCE</span>
                                     {% else %}
                                     <span class="key-type-badge">UPI</span>
                                     {% endif %}
@@ -252,9 +241,7 @@
                                         {% else %}
                                             {{ payment.date[:16] }}
                                         {% endif %}
-                                    {% else %}
-                                        N/A
-                                    {% endif %}
+                                    {% else %}N/A{% endif %}
                                 </td>
                                 <td>
                                     {% if payment.status == 'approved' %}
@@ -267,15 +254,15 @@
                                 </td>
                                 <td>
                                     {% if payment.status == 'rejected' and payment.rejection_reason %}
-                                    <span style="color: var(--accent-red);">{{ payment.rejection_reason }}</span>
+                                    <span style="color:var(--accent-red);">{{ payment.rejection_reason }}</span>
                                     {% elif payment.status == 'rejected' %}
-                                    <span style="color: var(--accent-red);">Rejected by admin</span>
+                                    <span style="color:var(--accent-red);">Rejected by admin</span>
                                     {% endif %}
                                 </td>
                             </tr>
                             {% else %}
                             <tr>
-                                <td colspan="7" style="text-align: center; color: var(--text-secondary);">
+                                <td colspan="7" style="text-align:center;color:var(--text-secondary);">
                                     No payment history found
                                 </td>
                             </tr>
@@ -284,17 +271,18 @@
                     </table>
                 </div>
             </div>
+
         </div>
     </div>
 
     <!-- Support Section -->
-    <div class="support-section" style="margin-top: 2rem; margin-bottom: 2rem;">
+    <div class="support-section" style="margin:2rem 1.5rem;">
         <h3><i class="fas fa-headset"></i> Need Help?</h3>
         <div class="support-grid">
             <a href="{{ telegram_support }}" target="_blank" class="support-card telegram">
                 <i class="fab fa-telegram"></i>
                 <span>Telegram Support</span>
-                <small>Click to chat with admin</small>
+                <small>Chat with admin</small>
             </a>
             <a href="{{ whatsapp_channel }}" target="_blank" class="support-card whatsapp">
                 <i class="fab fa-whatsapp"></i>
@@ -304,7 +292,6 @@
         </div>
     </div>
 
-    <!-- Footer Links -->
     <div class="footer-links">
         <p>&copy; 2026 Neon Dashboard. All rights reserved.</p>
         <a href="{{ url_for('privacy') }}">Privacy Policy</a> |
