@@ -64,22 +64,80 @@ def start_discord_bot():
         class MyClient(discord.Client):
             def __init__(self, *, intents: discord.Intents):
                 super().__init__(intents=intents)
-                self.tree = app_commands.CommandTree(self)
                 self.bot_started = False
-
-            async def setup_hook(self):
-                self.tree.copy_global_to(guild=target_guild)
-                await self.tree.sync(guild=target_guild)
 
             async def on_message(self, message: discord.Message):
                 if message.author.bot:
                     return
-                # Delete any regular message sent in the target channel to keep it clean
+
                 if message.channel.id == TARGET_CHANNEL_ID:
-                    try:
-                        await message.delete()
-                    except Exception:
-                        pass
+                    content = message.content.strip()
+                    if content == "!collect-your-user-id":
+                        # We send an ID retrieval result directly via DM
+                        user_id_embed = discord.Embed(
+                            description="🔥 **PREMIUM TICKET Opened**\n"
+                                        "🤵 **Official System — Registration Info**\n\n"
+                                        "**Product:** User ID Retrieval\n"
+                                        "**Description:** Secure Discord verification for the panel.\n\n"
+                                        f"👋 **Welcome {message.author.mention}!** 👋\n\n"
+                                        "📋 **User Information**\n"
+                                        f"**Customer:** {message.author.mention}\n"
+                                        f"**ID:** **`{message.author.id}`**\n\n"
+                                        "📝 **Instructions**\n"
+                                        "1. Long press the ID above to copy it.\n"
+                                        "2. Paste it in the website registration form.\n"
+                                        "3. Submit to complete account creation.",
+                            color=0x2b2d31
+                        )
+                        user_id_embed.set_author(name="🛍️ Platform Store — 📘 Account Registration")
+                        user_id_embed.set_footer(text="Official HQ • Fake queries = Ban | Premium Support 24/7")
+
+                        # Send via DM (Private to User)
+                        try:
+                            await message.author.send(embed=user_id_embed)
+                        except discord.Forbidden:
+                            # Fallback if DMs are disabled, send temporarily to the channel
+                            try:
+                                await message.channel.send(
+                                    content=f"⚠️ {message.author.mention} Please enable DMs! Here is your private ID (Deletes in 15s):",
+                                    embed=user_id_embed,
+                                    delete_after=15
+                                )
+                            except Exception:
+                                pass
+                        
+                        # Note: We do NOT delete the user's message as requested
+                        # Now, remove the old bot guide messages in the channel to move them down
+                        try:
+                            async for msg in message.channel.history(limit=20):
+                                if msg.author == self.user:
+                                    await msg.delete()
+                        except Exception:
+                            pass
+                        
+                        # Send a completely fresh guide message at the bottom
+                        guide_embed = discord.Embed(
+                            title="✨ Get Your Discord User ID",
+                            description="To access the panel, you must verify your Discord ID.\n\n"
+                                        "**How to get your ID:**\n"
+                                        "We've added a copy button! Look for the block below. Tap the text inside gently to copy the command, then paste and send it in this channel.\n\n"
+                                        "```text\n"
+                                        "!collect-your-user-id\n"
+                                        "```\n"
+                                        "⚠️ *Strict Channel: Sending anything other than this exact command will be auto-deleted.*",
+                            color=0x2ecc71
+                        )
+                        guide_embed.set_footer(text="Copy the command, paste it in chat, and press send.")
+                        try:
+                            await message.channel.send(embed=guide_embed)
+                        except Exception:
+                            pass
+                    else:
+                        # Auto-delete any other messages in this channel
+                        try:
+                            await message.delete()
+                        except Exception:
+                            pass
 
             async def on_ready(self):
                 if self.bot_started:
@@ -95,7 +153,7 @@ def start_discord_bot():
                             overwrite = channel.overwrites_for(everyone_role)
                             overwrite.send_messages = True
                             overwrite.read_messages = True
-                            overwrite.use_application_commands = True
+                            overwrite.use_application_commands = False
                             await channel.set_permissions(everyone_role, overwrite=overwrite, reason="Auto-configuring collect ID channel")
 
                         # Clear previous bot messages in channel to avoid spam on redeploys
@@ -103,16 +161,19 @@ def start_discord_bot():
                             if msg.author == self.user:
                                 await msg.delete()
                         
-                        welcome_embed = discord.Embed(
-                            title="🌟 Welcome to the Premium Platform! 🌟",
-                            description="To use the panel and recharge your credits, you must find out your **Discord User ID**.\n\n"
-                                        "Type the command below to instantly get your **User ID** in a secure, private message:\n\n"
-                                        "> 👉 **`/collect-your-user-id`** 👈\n\n"
-                                        "*Note: This channel is strict. Sending any other messages is not allowed.*",
+                        guide_embed = discord.Embed(
+                            title="✨ Get Your Discord User ID",
+                            description="To access the panel, you must verify your Discord ID.\n\n"
+                                        "**How to get your ID:**\n"
+                                        "We've added a copy button! Look for the black box below. Tap the text inside gently to copy the command, then paste and send it in this channel.\n\n"
+                                        "```text\n"
+                                        "!collect-your-user-id\n"
+                                        "```\n"
+                                        "⚠️ *Strict Channel: Sending anything other than this exact command will be auto-deleted.*",
                             color=0x2ecc71
                         )
-                        welcome_embed.set_footer(text="Your User ID is a 18 or 19 digit number.")
-                        await channel.send(embed=welcome_embed)
+                        guide_embed.set_footer(text="Copy the command, paste it in chat, and press send.")
+                        await channel.send(embed=guide_embed)
                     except Exception as e:
                         logging.error(f"Failed to setup discord channel: {e}")
 
@@ -120,41 +181,6 @@ def start_discord_bot():
         intents.message_content = True
         intents.messages = True
         client = MyClient(intents=intents)
-
-        @client.tree.command(name="collect-your-user-id", description="Get your unique Discord User ID")
-        async def collect_your_user_id(interaction: discord.Interaction):
-            embed = discord.Embed(
-                title="🆔 Your User ID Request",
-                description=f"Hello {interaction.user.mention}!\n\nHere is your unique Discord User ID:\n\n"
-                            f"**`{interaction.user.id}`**\n\n"
-                            "*(Long press the ID above to copy it)*\n\n"
-                            "Please use this ID in the registration form.",
-                color=0xe91e63
-            )
-            await interaction.response.send_message(embed=embed, ephemeral=True)
-            
-            # Move welcome message down
-            channel = interaction.channel
-            if channel:
-                async for msg in channel.history(limit=20):
-                    if msg.author == client.user:
-                        try:
-                            await msg.delete()
-                        except Exception:
-                            pass
-                welcome_embed = discord.Embed(
-                    title="🌟 Welcome to the Premium Platform! 🌟",
-                    description="To use the panel and recharge your credits, you must find out your **Discord User ID**.\n\n"
-                                "Type the command below to instantly get your **User ID** in a secure, private message:\n\n"
-                                "> 👉 **`/collect-your-user-id`** 👈\n\n"
-                                "*Note: This channel is strict. Sending any other messages is not allowed.*",
-                    color=0x2ecc71
-                )
-                welcome_embed.set_footer(text="Your User ID is a 18 or 19 digit number.")
-                try:
-                    await channel.send(embed=welcome_embed)
-                except Exception:
-                    pass
 
         # Ensure a new event loop for this background thread
         asyncio.set_event_loop(asyncio.new_event_loop())
