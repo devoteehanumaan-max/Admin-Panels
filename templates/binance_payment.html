@@ -164,25 +164,25 @@
             <div id="step-select">
                 <h3><i class="fas fa-coins"></i> Select Amount</h3>
                 <div class="amount-options">
-                    <div class="amount-card" data-amount="10" data-usd="10" data-credits="{{ (10 * usd_to_inr * credit_rate)|round(1) }}">
+                    <div class="amount-card" data-amount="10" data-usd="10" data-credits="{{ calculate_credits(10 * usd_to_inr) }}">
                         <div class="amount-price">$10</div>
-                        <div class="amount-credits">{{ (10 * usd_to_inr * credit_rate)|round(1) }} Credits</div>
+                        <div class="amount-credits">{{ calculate_credits(10 * usd_to_inr) }} Credits</div>
                     </div>
-                    <div class="amount-card" data-amount="20" data-usd="20" data-credits="{{ (20 * usd_to_inr * credit_rate)|round(1) }}">
+                    <div class="amount-card" data-amount="20" data-usd="20" data-credits="{{ calculate_credits(20 * usd_to_inr) }}">
                         <div class="amount-price">$20</div>
-                        <div class="amount-credits">{{ (20 * usd_to_inr * credit_rate)|round(1) }} Credits</div>
+                        <div class="amount-credits">{{ calculate_credits(20 * usd_to_inr) }} Credits</div>
                     </div>
-                    <div class="amount-card" data-amount="30" data-usd="30" data-credits="{{ (30 * usd_to_inr * credit_rate)|round(1) }}">
+                    <div class="amount-card" data-amount="30" data-usd="30" data-credits="{{ calculate_credits(30 * usd_to_inr) }}">
                         <div class="amount-price">$30</div>
-                        <div class="amount-credits">{{ (30 * usd_to_inr * credit_rate)|round(1) }} Credits</div>
+                        <div class="amount-credits">{{ calculate_credits(30 * usd_to_inr) }} Credits</div>
                     </div>
-                    <div class="amount-card" data-amount="50" data-usd="50" data-credits="{{ (50 * usd_to_inr * credit_rate)|round(1) }}">
+                    <div class="amount-card" data-amount="50" data-usd="50" data-credits="{{ calculate_credits(50 * usd_to_inr) }}">
                         <div class="amount-price">$50</div>
-                        <div class="amount-credits">{{ (50 * usd_to_inr * credit_rate)|round(1) }} Credits</div>
+                        <div class="amount-credits">{{ calculate_credits(50 * usd_to_inr) }} Credits</div>
                     </div>
-                    <div class="amount-card" data-amount="100" data-usd="100" data-credits="{{ (100 * usd_to_inr * credit_rate)|round(1) }}">
+                    <div class="amount-card" data-amount="100" data-usd="100" data-credits="{{ calculate_credits(100 * usd_to_inr) }}">
                         <div class="amount-price">$100</div>
-                        <div class="amount-credits">{{ (100 * usd_to_inr * credit_rate)|round(1) }} Credits</div>
+                        <div class="amount-credits">{{ calculate_credits(100 * usd_to_inr) }} Credits</div>
                     </div>
                 </div>
 
