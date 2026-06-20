@@ -364,9 +364,8 @@ def check_discord_membership(discord_user_id):
 # DISCOUNT ENGINE
 # ============================================
 
-def calculate_recharge_credits(amount):
+def calculate_recharge_bonus(amount):
     amount = float(amount)
-    base_credits = amount * CREDIT_RATE
     bonus = 0
     if amount >= 10000:
         bonus = 200
@@ -374,7 +373,12 @@ def calculate_recharge_credits(amount):
         bonus = 80
     elif amount >= 2000:
         bonus = 20
-    return round(base_credits + bonus, 2)
+    return bonus
+
+def calculate_recharge_credits(amount):
+    amount = float(amount)
+    base_credits = amount * CREDIT_RATE
+    return round(base_credits + calculate_recharge_bonus(amount), 2)
 
 def calculate_discounted_credits(base_credit_per_day, days):
     # Multipliers: total cost = base * multiplier (less than days * base = discount)
@@ -852,13 +856,15 @@ def payment_page():
                            binance_address=BINANCE_ADDRESS,
                            telegram_support=TELEGRAM_SUPPORT_LINK,
                            whatsapp_channel=WHATSAPP_CHANNEL,
-                           calculate_credits=calculate_recharge_credits)
+                           calculate_credits=calculate_recharge_credits,
+                           calculate_bonus=calculate_recharge_bonus)
 
 def _payment_ctx(extra=None):
     ctx = dict(min_recharge=MINIMUM_RECHARGE, credit_rate=CREDIT_RATE, upi_id=UPI_ID,
                usd_to_inr=USD_TO_INR, binance_address=BINANCE_ADDRESS,
                telegram_support=TELEGRAM_SUPPORT_LINK, whatsapp_channel=WHATSAPP_CHANNEL,
-               calculate_credits=calculate_recharge_credits)
+               calculate_credits=calculate_recharge_credits,
+               calculate_bonus=calculate_recharge_bonus)
     if extra: ctx.update(extra)
     return ctx
 
@@ -990,7 +996,8 @@ def generate_payment_qr():
         return jsonify({'success': False, 'error': f'Minimum amount is ₹{MINIMUM_RECHARGE}'})
     qr_code = generate_upi_qr(amount)
     return jsonify({'success': True, 'qr_code': qr_code, 'amount': amount,
-                    'credits': calculate_recharge_credits(amount)})
+                    'credits': calculate_recharge_credits(amount),
+                    'bonus': calculate_recharge_bonus(amount)})
 
 # ============================================
 # ADMIN DASHBOARD
