@@ -164,39 +164,39 @@
             <div id="step-select">
                 <h3><i class="fas fa-coins"></i> Select Amount</h3>
                 <div class="amount-options">
-                    <div class="amount-card" data-amount="10" data-usd="10" data-credits="{{ calculate_credits(10 * usd_to_inr) }}">
+                    <div class="amount-card" data-amount="10" data-usd="10" data-credits="{{ calculate_credits(10, 'USD') }}">
                         <div class="amount-price">$10</div>
-                        <div class="amount-credits">{{ calculate_credits(10 * usd_to_inr) }} Credits</div>
-                        {% if calculate_bonus(10 * usd_to_inr) > 0 %}
-                        <div class="amount-bonus" style="font-size: 0.8rem; color: var(--accent-green); margin-top: 2px;">+{{ calculate_bonus(10 * usd_to_inr) }} Bonus</div>
+                        <div class="amount-credits">{{ calculate_credits(10, 'USD') }} Credits</div>
+                        {% if calculate_bonus(10, 'USD') > 0 %}
+                        <div class="amount-bonus" style="font-size: 0.8rem; color: var(--accent-green); margin-top: 2px;">+{{ calculate_bonus(10, 'USD') }} Bonus</div>
                         {% endif %}
                     </div>
-                    <div class="amount-card" data-amount="20" data-usd="20" data-credits="{{ calculate_credits(20 * usd_to_inr) }}">
+                    <div class="amount-card" data-amount="20" data-usd="20" data-credits="{{ calculate_credits(20, 'USD') }}">
                         <div class="amount-price">$20</div>
-                        <div class="amount-credits">{{ calculate_credits(20 * usd_to_inr) }} Credits</div>
-                        {% if calculate_bonus(20 * usd_to_inr) > 0 %}
-                        <div class="amount-bonus" style="font-size: 0.8rem; color: var(--accent-green); margin-top: 2px;">+{{ calculate_bonus(20 * usd_to_inr) }} Bonus</div>
+                        <div class="amount-credits">{{ calculate_credits(20, 'USD') }} Credits</div>
+                        {% if calculate_bonus(20, 'USD') > 0 %}
+                        <div class="amount-bonus" style="font-size: 0.8rem; color: var(--accent-green); margin-top: 2px;">+{{ calculate_bonus(20, 'USD') }} Bonus</div>
                         {% endif %}
                     </div>
-                    <div class="amount-card" data-amount="30" data-usd="30" data-credits="{{ calculate_credits(30 * usd_to_inr) }}">
+                    <div class="amount-card" data-amount="30" data-usd="30" data-credits="{{ calculate_credits(30, 'USD') }}">
                         <div class="amount-price">$30</div>
-                        <div class="amount-credits">{{ calculate_credits(30 * usd_to_inr) }} Credits</div>
-                        {% if calculate_bonus(30 * usd_to_inr) > 0 %}
-                        <div class="amount-bonus" style="font-size: 0.8rem; color: var(--accent-green); margin-top: 2px;">+{{ calculate_bonus(30 * usd_to_inr) }} Bonus</div>
+                        <div class="amount-credits">{{ calculate_credits(30, 'USD') }} Credits</div>
+                        {% if calculate_bonus(30, 'USD') > 0 %}
+                        <div class="amount-bonus" style="font-size: 0.8rem; color: var(--accent-green); margin-top: 2px;">+{{ calculate_bonus(30, 'USD') }} Bonus</div>
                         {% endif %}
                     </div>
-                    <div class="amount-card" data-amount="50" data-usd="50" data-credits="{{ calculate_credits(50 * usd_to_inr) }}">
+                    <div class="amount-card" data-amount="50" data-usd="50" data-credits="{{ calculate_credits(50, 'USD') }}">
                         <div class="amount-price">$50</div>
-                        <div class="amount-credits">{{ calculate_credits(50 * usd_to_inr) }} Credits</div>
-                        {% if calculate_bonus(50 * usd_to_inr) > 0 %}
-                        <div class="amount-bonus" style="font-size: 0.8rem; color: var(--accent-green); margin-top: 2px;">+{{ calculate_bonus(50 * usd_to_inr) }} Bonus</div>
+                        <div class="amount-credits">{{ calculate_credits(50, 'USD') }} Credits</div>
+                        {% if calculate_bonus(50, 'USD') > 0 %}
+                        <div class="amount-bonus" style="font-size: 0.8rem; color: var(--accent-green); margin-top: 2px;">+{{ calculate_bonus(50, 'USD') }} Bonus</div>
                         {% endif %}
                     </div>
-                    <div class="amount-card" data-amount="100" data-usd="100" data-credits="{{ calculate_credits(100 * usd_to_inr) }}">
+                    <div class="amount-card" data-amount="100" data-usd="100" data-credits="{{ calculate_credits(100, 'USD') }}">
                         <div class="amount-price">$100</div>
-                        <div class="amount-credits">{{ calculate_credits(100 * usd_to_inr) }} Credits</div>
-                        {% if calculate_bonus(100 * usd_to_inr) > 0 %}
-                        <div class="amount-bonus" style="font-size: 0.8rem; color: var(--accent-green); margin-top: 2px;">+{{ calculate_bonus(100 * usd_to_inr) }} Bonus</div>
+                        <div class="amount-credits">{{ calculate_credits(100, 'USD') }} Credits</div>
+                        {% if calculate_bonus(100, 'USD') > 0 %}
+                        <div class="amount-bonus" style="font-size: 0.8rem; color: var(--accent-green); margin-top: 2px;">+{{ calculate_bonus(100, 'USD') }} Bonus</div>
                         {% endif %}
                     </div>
                 </div>
