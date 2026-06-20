@@ -37,6 +37,104 @@ log_level = logging.DEBUG if os.getenv('FLASK_DEBUG') else logging.WARNING
 logging.basicConfig(level=log_level, format='%(asctime)s %(levelname)s %(message)s')
 
 # ============================================
+# DISCORD BOT INTEGRATION
+# ============================================
+
+import threading
+import socket
+
+def start_discord_bot():
+    try:
+        import discord
+        from discord import app_commands
+        import asyncio
+    except ImportError:
+        logging.warning("discord.py not installed, skipping bot startup")
+        return
+
+    token = os.getenv('DISCORD_BOT_TOKEN')
+    if not token:
+        return
+
+    try:
+        guild_id_str = os.getenv('DISCORD_GUILD_ID', '1344323930923601992')
+        target_guild = discord.Object(id=int(guild_id_str))
+
+        class MyClient(discord.Client):
+            def __init__(self, *, intents: discord.Intents):
+                super().__init__(intents=intents)
+                self.tree = app_commands.CommandTree(self)
+                self.bot_started = False
+
+            async def setup_hook(self):
+                self.tree.copy_global_to(guild=target_guild)
+                await self.tree.sync(guild=target_guild)
+
+            async def on_ready(self):
+                if self.bot_started:
+                    return
+                self.bot_started = True
+                
+                logging.info(f'Discord Bot Logged on as {self.user}')
+                target_channel_id = 1517902652866957494
+                channel = self.get_channel(target_channel_id)
+                if channel:
+                    try:
+                        if getattr(channel, 'guild', None):
+                            everyone_role = channel.guild.default_role
+                            overwrite = channel.overwrites_for(everyone_role)
+                            overwrite.send_messages = False
+                            overwrite.read_messages = True
+                            overwrite.use_application_commands = True
+                            # Preserve administrator viewing without hiding it from everyone
+                            await channel.set_permissions(everyone_role, overwrite=overwrite, reason="Auto-configuring collect ID channel")
+
+                        # Clear previous bot messages in channel to avoid spam on redeploys
+                        async for msg in channel.history(limit=20):
+                            if msg.author == self.user:
+                                await msg.delete()
+                        
+                        embed = discord.Embed(
+                            title="🌟 Welcome to the Premium Platform! 🌟",
+                            description="To use the panel and recharge your credits, you must find out your **Discord User ID**.\n\n"
+                                        "Type the command below to instantly get your **User ID** in a secure, private message:\n\n"
+                                        "> 👉 **`/collect-your-user-id`** 👈\n\n"
+                                        "*Note: This channel is read-only. You can only use the command here.*",
+                            color=0x2ecc71
+                        )
+                        embed.set_footer(text="Your User ID is a 18 or 19 digit number.")
+                        await channel.send(embed=embed)
+                    except Exception as e:
+                        logging.error(f"Failed to setup discord channel: {e}")
+
+        intents = discord.Intents.default()
+        client = MyClient(intents=intents)
+
+        @client.tree.command(name="collect-your-user-id", description="Get your unique Discord User ID")
+        async def collect_your_user_id(interaction: discord.Interaction):
+            embed = discord.Embed(
+                title="🆔 Your User ID Request",
+                description=f"Hello {interaction.user.mention}!\n\nHere is your unique Discord User ID:\n\n"
+                            f"**`{interaction.user.id}`**\n\n"
+                            "Please copy this ID and use it in the registration form on our website.",
+                color=0xe91e63
+            )
+            await interaction.response.send_message(embed=embed, ephemeral=True)
+            
+        # Ensure a new event loop for this background thread
+        asyncio.set_event_loop(asyncio.new_event_loop())
+        client.run(token, log_handler=None)
+    except Exception as e:
+        logging.error(f"Discord bot thread crashed: {e}")
+
+try:
+    _lock_socket = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
+    _lock_socket.bind('\0discord_bot_lock_admin_panel')
+    threading.Thread(target=start_discord_bot, daemon=True).start()
+except Exception:
+    pass
+
+# ============================================
 # DATABASE CONNECTION
 # ============================================
 
