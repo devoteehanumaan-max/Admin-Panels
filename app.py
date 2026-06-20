@@ -61,10 +61,22 @@ def start_discord_bot():
         target_guild = discord.Object(id=int(guild_id_str))
         TARGET_CHANNEL_ID = 1517902652866957494
 
+        class CommandCopyButton(discord.ui.View):
+            def __init__(self):
+                super().__init__(timeout=None)
+
+            @discord.ui.button(label="📋 Tap here to get Command", style=discord.ButtonStyle.primary, custom_id="copy_cmd_btn")
+            async def copy_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
+                await interaction.response.send_message(content="!collect-your-user-id", ephemeral=True)
+                await interaction.followup.send(content="☝️ **Long-press** the message above to copy it, then paste it in the channel.", ephemeral=True)
+
         class MyClient(discord.Client):
             def __init__(self, *, intents: discord.Intents):
                 super().__init__(intents=intents)
                 self.bot_started = False
+
+            async def setup_hook(self):
+                self.add_view(CommandCopyButton())
 
             async def on_message(self, message: discord.Message):
                 if message.author.bot:
@@ -120,16 +132,15 @@ def start_discord_bot():
                             title="✨ Get Your Discord User ID",
                             description="To access the panel, you must verify your Discord ID.\n\n"
                                         "**How to get your ID:**\n"
-                                        "We've added a copy button! Look for the block below. Tap the text inside gently to copy the command, then paste and send it in this channel.\n\n"
-                                        "```text\n"
-                                        "!collect-your-user-id\n"
-                                        "```\n"
-                                        "⚠️ *Strict Channel: Sending anything other than this exact command will be auto-deleted.*",
+                                        "1️⃣ Click the button below to get the command.\n"
+                                        "2️⃣ Copy the command that appears.\n"
+                                        "3️⃣ Paste and send it in this channel.\n\n"
+                                        "⚠️ *Strict Channel: Sending anything other than the exact command will be auto-deleted.*",
                             color=0x2ecc71
                         )
-                        guide_embed.set_footer(text="Copy the command, paste it in chat, and press send.")
+                        guide_embed.set_footer(text="Click the button below to start.")
                         try:
-                            await message.channel.send(embed=guide_embed)
+                            await message.channel.send(embed=guide_embed, view=CommandCopyButton())
                         except Exception:
                             pass
                     else:
@@ -165,15 +176,14 @@ def start_discord_bot():
                             title="✨ Get Your Discord User ID",
                             description="To access the panel, you must verify your Discord ID.\n\n"
                                         "**How to get your ID:**\n"
-                                        "We've added a copy button! Look for the black box below. Tap the text inside gently to copy the command, then paste and send it in this channel.\n\n"
-                                        "```text\n"
-                                        "!collect-your-user-id\n"
-                                        "```\n"
-                                        "⚠️ *Strict Channel: Sending anything other than this exact command will be auto-deleted.*",
+                                        "1️⃣ Click the button below to get the command.\n"
+                                        "2️⃣ Copy the command that appears.\n"
+                                        "3️⃣ Paste and send it in this channel.\n\n"
+                                        "⚠️ *Strict Channel: Sending anything other than the exact command will be auto-deleted.*",
                             color=0x2ecc71
                         )
-                        guide_embed.set_footer(text="Copy the command, paste it in chat, and press send.")
-                        await channel.send(embed=guide_embed)
+                        guide_embed.set_footer(text="Click the button below to start.")
+                        await channel.send(embed=guide_embed, view=CommandCopyButton())
                     except Exception as e:
                         logging.error(f"Failed to setup discord channel: {e}")
 
