@@ -364,9 +364,18 @@ def check_discord_membership(discord_user_id):
 # DISCOUNT ENGINE
 # ============================================
 
-def calculate_recharge_bonus(amount):
+def calculate_recharge_bonus(amount, currency='INR'):
     amount = float(amount)
     bonus = 0
+    if currency == 'USD':
+        if amount >= 100:
+            bonus = 200
+        elif amount >= 50:
+            bonus = 80
+        elif amount >= 20:
+            bonus = 20
+        return bonus
+        
     if amount >= 10000:
         bonus = 200
     elif amount >= 5000:
@@ -375,10 +384,13 @@ def calculate_recharge_bonus(amount):
         bonus = 20
     return bonus
 
-def calculate_recharge_credits(amount):
+def calculate_recharge_credits(amount, currency='INR'):
     amount = float(amount)
-    base_credits = amount * CREDIT_RATE
-    return round(base_credits + calculate_recharge_bonus(amount), 2)
+    if currency == 'USD':
+        base_credits = amount * USD_TO_INR * CREDIT_RATE
+    else:
+        base_credits = amount * CREDIT_RATE
+    return round(base_credits + calculate_recharge_bonus(amount, currency), 2)
 
 def calculate_discounted_credits(base_credit_per_day, days):
     # Multipliers: total cost = base * multiplier (less than days * base = discount)
@@ -927,7 +939,7 @@ def binance_payment():
         result = binance_api.create_order(amount_usd, session['username'])
         if result and result.get('success'):
             order_id = result.get('orderId')
-            credits  = calculate_recharge_credits(amount_inr)
+            credits  = calculate_recharge_credits(amount_usd, 'USD')
             conn = get_db_connection()
             c = conn.cursor()
             try:
@@ -1336,7 +1348,7 @@ def create_crypto_order():
                              headers=headers, timeout=30)
         if resp.status_code == 200:
             order_data = resp.json()
-            credits = amount * USD_TO_INR * CREDIT_RATE
+            credits = calculate_recharge_credits(amount, 'USD')
             conn = get_db_connection()
             c = conn.cursor()
             try:
