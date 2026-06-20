@@ -67,7 +67,7 @@
                     <div class="qr-placeholder">Generating QR Code...</div>
                     {% endif %}
                     <p class="amount-display">Amount: ₹<span id="qr-amount">{{ amount or min_recharge }}</span></p>
-                    <p class="credits-display-small">You will get: <span id="qr-credits">{{ ((amount or min_recharge) * credit_rate)|round(1) }}</span> Credits</p>
+                    <p class="credits-display-small">You will get: <span id="qr-credits">{{ calculate_credits(amount or min_recharge) }}</span> Credits</p>
                 </div>
                 
                 <!-- Quick Amount Selector -->
