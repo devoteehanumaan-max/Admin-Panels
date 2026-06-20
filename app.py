@@ -364,6 +364,18 @@ def check_discord_membership(discord_user_id):
 # DISCOUNT ENGINE
 # ============================================
 
+def calculate_recharge_credits(amount):
+    amount = float(amount)
+    base_credits = amount * CREDIT_RATE
+    bonus = 0
+    if amount >= 10000:
+        bonus = 200
+    elif amount >= 5000:
+        bonus = 80
+    elif amount >= 2000:
+        bonus = 20
+    return round(base_credits + bonus, 2)
+
 def calculate_discounted_credits(base_credit_per_day, days):
     # Multipliers: total cost = base * multiplier (less than days * base = discount)
     tiers = {1: 1.0, 3: 1.5, 7: 2.0, 15: 3.0, 30: 4.0, 60: 5.0, 90: 6.0}
@@ -839,12 +851,14 @@ def payment_page():
                            upi_id=UPI_ID, usd_to_inr=USD_TO_INR,
                            binance_address=BINANCE_ADDRESS,
                            telegram_support=TELEGRAM_SUPPORT_LINK,
-                           whatsapp_channel=WHATSAPP_CHANNEL)
+                           whatsapp_channel=WHATSAPP_CHANNEL,
+                           calculate_credits=calculate_recharge_credits)
 
 def _payment_ctx(extra=None):
     ctx = dict(min_recharge=MINIMUM_RECHARGE, credit_rate=CREDIT_RATE, upi_id=UPI_ID,
                usd_to_inr=USD_TO_INR, binance_address=BINANCE_ADDRESS,
-               telegram_support=TELEGRAM_SUPPORT_LINK, whatsapp_channel=WHATSAPP_CHANNEL)
+               telegram_support=TELEGRAM_SUPPORT_LINK, whatsapp_channel=WHATSAPP_CHANNEL,
+               calculate_credits=calculate_recharge_credits)
     if extra: ctx.update(extra)
     return ctx
 
@@ -869,7 +883,7 @@ def upi_payment():
                                    qr_code=qr, amount=amount,
                                    **_payment_ctx())
 
-        credits = amount * CREDIT_RATE
+        credits = calculate_recharge_credits(amount)
         conn = get_db_connection()
         c = conn.cursor()
         try:
@@ -907,7 +921,7 @@ def binance_payment():
         result = binance_api.create_order(amount_usd, session['username'])
         if result and result.get('success'):
             order_id = result.get('orderId')
-            credits  = amount_inr * CREDIT_RATE
+            credits  = calculate_recharge_credits(amount_inr)
             conn = get_db_connection()
             c = conn.cursor()
             try:
@@ -976,7 +990,7 @@ def generate_payment_qr():
         return jsonify({'success': False, 'error': f'Minimum amount is ₹{MINIMUM_RECHARGE}'})
     qr_code = generate_upi_qr(amount)
     return jsonify({'success': True, 'qr_code': qr_code, 'amount': amount,
-                    'credits': round(amount * CREDIT_RATE, 1)})
+                    'credits': calculate_recharge_credits(amount)})
 
 # ============================================
 # ADMIN DASHBOARD
