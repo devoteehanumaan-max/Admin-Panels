@@ -67,7 +67,12 @@
                     <div class="qr-placeholder">Generating QR Code...</div>
                     {% endif %}
                     <p class="amount-display">Amount: ₹<span id="qr-amount">{{ amount or min_recharge }}</span></p>
-                    <p class="credits-display-small">You will get: <span id="qr-credits">{{ calculate_credits(amount or min_recharge) }}</span> Credits</p>
+                    <p class="credits-display-small">
+                        You will get: <span id="qr-credits">{{ calculate_credits(amount or min_recharge) }}</span> Credits
+                        <span id="qr-bonus-container" style="display: {% if calculate_bonus(amount or min_recharge) > 0 %}inline{% else %}none{% endif %}; font-weight: bold; padding-left: 5px;">
+                            (<span style="color: var(--accent-green);">+<span id="qr-bonus">{{ calculate_bonus(amount or min_recharge) }}</span> Bonus</span>)
+                        </span>
+                    </p>
                 </div>
                 
                 <!-- Quick Amount Selector -->
@@ -279,6 +284,7 @@
         if (amount < {{ min_recharge }}) {
             document.getElementById('qr-amount').textContent = amount;
             document.getElementById('qr-credits').textContent = (amount * {{ credit_rate }}).toFixed(1);
+            document.getElementById('qr-bonus-container').style.display = 'none';
             return;
         }
         
@@ -293,6 +299,12 @@
                 document.getElementById('qr-image').src = `data:image/png;base64,${data.qr_code}`;
                 document.getElementById('qr-amount').textContent = data.amount;
                 document.getElementById('qr-credits').textContent = data.credits;
+                if (data.bonus > 0) {
+                    document.getElementById('qr-bonus-container').style.display = 'inline';
+                    document.getElementById('qr-bonus').textContent = data.bonus;
+                } else {
+                    document.getElementById('qr-bonus-container').style.display = 'none';
+                }
             }
         })
         .catch(error => console.error('Error:', error));
