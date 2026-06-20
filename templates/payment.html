@@ -21,9 +21,14 @@
         <div class="payment-container">
             <div class="card">
                 <h1 class="neon-text" style="text-align: center;">💰 Recharge Credits</h1>
-                <p style="text-align: center; color: var(--accent-green); margin-bottom: 5px;">1 Rupee = {{ credit_rate }} Credits</p>
-                <div style="text-align: center; font-size: 0.9rem; color: var(--accent-yellow); margin-bottom: 20px; font-weight: bold;">
-                    ⭐ Bonus Tiers: ₹2000+ = <span style="color:var(--accent-green);">+20 Bonus</span> | ₹5000+ = <span style="color:var(--accent-green);">+80 Bonus</span> | ₹10000+ = <span style="color:var(--accent-green);">+200 Bonus</span> ⭐
+                <p style="text-align: center; color: var(--accent-green); margin-bottom: 5px; font-size: 1.1rem; font-weight: bold;">1 Rupee = {{ credit_rate }} Credits</p>
+                <div class="bonus-tiers-banner" style="text-align: center; font-size: 0.9rem; color: var(--accent-yellow); margin-bottom: 20px; font-weight: bold; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 10px; border: 1px dashed var(--accent-yellow);">
+                    ⭐ Bonus Tiers ⭐<br>
+                    <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 8px;">
+                        <span>₹2000+ = <span style="color:var(--accent-green);">+20</span></span>
+                        <span>₹5000+ = <span style="color:var(--accent-green);">+80</span></span>
+                        <span>₹10000+ = <span style="color:var(--accent-green);">+200</span></span>
+                    </div>
                 </div>
                 
                 <!-- Payment Method Selection -->
