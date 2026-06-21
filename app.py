@@ -415,6 +415,10 @@ def add_missing_columns():
     checks = [
         ('users', 'discord_id', "ALTER TABLE users ADD COLUMN discord_id VARCHAR(50) UNIQUE"),
         ('users', 'discord_joined_at', "ALTER TABLE users ADD COLUMN discord_joined_at TIMESTAMP"),
+        ('users', 'referral_code', "ALTER TABLE users ADD COLUMN referral_code VARCHAR(50) UNIQUE"),
+        ('users', 'referred_by', "ALTER TABLE users ADD COLUMN referred_by INTEGER"),
+        ('users', 'total_referrals', "ALTER TABLE users ADD COLUMN total_referrals INTEGER DEFAULT 0"),
+        ('users', 'referral_earnings', "ALTER TABLE users ADD COLUMN referral_earnings DECIMAL(10,2) DEFAULT 0"),
         ('payments', 'rejection_reason', "ALTER TABLE payments ADD COLUMN rejection_reason TEXT"),
         ('payments', 'expiry_time', "ALTER TABLE payments ADD COLUMN expiry_time TIMESTAMP"),
         ('payments', 'approved_date', "ALTER TABLE payments ADD COLUMN approved_date TIMESTAMP"),
@@ -432,6 +436,16 @@ def add_missing_columns():
             if not c.fetchone():
                 c.execute(alter_sql)
                 logging.info(f"Added column {table}.{column}")
+        
+        # Backfill referral codes
+        import secrets
+        import string
+        c.execute("SELECT id FROM users WHERE referral_code IS NULL")
+        users_without_code = c.fetchall()
+        for u in users_without_code:
+            code = ''.join(secrets.choice(string.ascii_uppercase + string.digits) for _ in range(8))
+            c.execute("UPDATE users SET referral_code = %s WHERE id = %s", (code, u['id']))
+        
         conn.commit()
         conn.close()
     except Exception as e:
@@ -850,14 +864,17 @@ def login():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    ref_code = request.args.get('ref', '')
     ctx = dict(discord_invite=DISCORD_INVITE_LINK,
                whatsapp_channel=WHATSAPP_CHANNEL,
-               telegram_support=TELEGRAM_SUPPORT_LINK)
+               telegram_support=TELEGRAM_SUPPORT_LINK,
+               ref_code=ref_code)
     if request.method == 'POST':
         username   = request.form.get('username', '').strip()
         password   = request.form.get('password', '')
         confirm    = request.form.get('confirm_password', '')
         discord_id = request.form.get('discord_id', '').strip()
+        referrer_code = request.form.get('referrer_code', '').strip()
 
         if not username or not password or not discord_id:
             return render_template('register.html', error='All fields are required', **ctx)
@@ -873,16 +890,40 @@ def register():
         hashed = bcrypt.generate_password_hash(password).decode('utf-8')
         conn = get_db_connection()
         c = conn.cursor()
+        
+        referrer_id = None
+        if referrer_code:
+            c.execute("SELECT id FROM users WHERE referral_code = %s", (referrer_code,))
+            ref_row = c.fetchone()
+            if ref_row:
+                referrer_id = ref_row['id']
+
+        import secrets
+        import string
+        new_referral_code = ''.join(secrets.choice(string.ascii_uppercase + string.digits) for _ in range(8))
+        
         try:
             c.execute('''
-                INSERT INTO users (username, password, role, credits, discord_id, discord_joined_at)
-                VALUES (%s, %s, %s, %s, %s, %s)
-            ''', (username, hashed, 'user', 0, discord_id, datetime.now()))
+                INSERT INTO users (username, password, role, credits, discord_id, discord_joined_at, referral_code, referred_by)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            ''', (username, hashed, 'user', 0, discord_id, datetime.now(), new_referral_code, referrer_id))
+            
+            if referrer_id:
+                # Add 0.45 credits to referrer instantly
+                c.execute('''
+                    UPDATE users 
+                    SET credits = credits + 0.45, 
+                        total_referrals = total_referrals + 1,
+                        referral_earnings = referral_earnings + 0.45
+                    WHERE id = %s
+                ''', (referrer_id,))
+            
             conn.commit()
             conn.close()
             # ✅ FIX #7: After register, redirect to login (not just render index)
             return redirect(url_for('login'))
         except Exception as e:
+            conn.rollback()
             conn.close()
             logging.error(f"Registration error: {e}")
             if 'duplicate key' in str(e).lower():
@@ -1148,6 +1189,21 @@ def check_binance_payment(order_id):
                     UPDATE users SET credits = credits + %s, total_recharged = total_recharged + %s
                     WHERE username = %s
                 ''', (float(row['credits_added']), float(row['amount']), row['username']))
+                
+                # Referral bonus logic
+                c.execute("SELECT referred_by FROM users WHERE username = %s AND referred_by IS NOT NULL", (row['username'],))
+                ref_row = c.fetchone()
+                if ref_row and ref_row['referred_by']:
+                    amount_inr = float(row['amount'])
+                    amount_capped = min(amount_inr, 10000.0)
+                    bonus = round(amount_capped * 0.03, 2)
+                    if bonus > 0:
+                        c.execute('''
+                            UPDATE users
+                            SET credits = credits + %s, referral_earnings = referral_earnings + %s
+                            WHERE id = %s
+                        ''', (bonus, bonus, ref_row['referred_by']))
+                
                 conn.commit()
                 return jsonify({'success': True, 'status': 'completed', 'credited': True,
                                 'credits': float(row['credits_added'])})
@@ -1249,6 +1305,21 @@ def approve_payment():
             UPDATE users SET credits = credits + %s, total_recharged = total_recharged + %s
             WHERE username = %s
         ''', (float(row['credits_added']), float(row['amount']), row['username']))
+
+        # Referral bonus logic
+        c.execute("SELECT referred_by FROM users WHERE username = %s AND referred_by IS NOT NULL", (row['username'],))
+        ref_row = c.fetchone()
+        if ref_row and ref_row['referred_by']:
+            amount_inr = float(row['amount'])
+            amount_capped = min(amount_inr, 10000.0)
+            bonus = round(amount_capped * 0.03, 2)
+            if bonus > 0:
+                c.execute('''
+                    UPDATE users
+                    SET credits = credits + %s, referral_earnings = referral_earnings + %s
+                    WHERE id = %s
+                ''', (bonus, bonus, ref_row['referred_by']))
+
         conn.commit()
         return jsonify({'success': True, 'message': 'Payment approved'})
     except Exception as e:
