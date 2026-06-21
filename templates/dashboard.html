@@ -1,298 +1,487 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>User Dashboard - Neon Dashboard</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
     <style>
-        .btn-premium {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            padding: 10px 18px;
-            background: linear-gradient(135deg, #ff00cc, #3333ff);
-            color: white;
-            text-decoration: none;
-            border-radius: 12px;
-            font-weight: bold;
-            box-shadow: 0 0 12px rgba(255,0,204,0.5);
-            transition: all 0.3s ease;
-            border: none;
-            cursor: pointer;
-            min-width: 160px;
-        }
-        .btn-premium:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 0 22px rgba(255,0,204,0.8);
-        }
-        .footer-links {
-            text-align: center;
-            padding: 1rem;
-            margin-top: 2rem;
-            color: var(--text-secondary);
-            font-size: 0.8rem;
-            border-top: 1px solid var(--border-color);
-        }
-        .footer-links a { color: var(--accent-pink); text-decoration: none; margin: 0 0.5rem; }
-        .footer-links a:hover { color: var(--accent-green); }
+      .btn-premium {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 10px 18px;
+        background: linear-gradient(135deg, #ff00cc, #3333ff);
+        color: white;
+        text-decoration: none;
+        border-radius: 12px;
+        font-weight: bold;
+        box-shadow: 0 0 12px rgba(255, 0, 204, 0.5);
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+        min-width: 160px;
+      }
+      .btn-premium:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0 22px rgba(255, 0, 204, 0.8);
+      }
+      .footer-links {
+        text-align: center;
+        padding: 1rem;
+        margin-top: 2rem;
+        color: var(--text-secondary);
+        font-size: 0.8rem;
+        border-top: 1px solid var(--border-color);
+      }
+      .footer-links a {
+        color: var(--accent-pink);
+        text-decoration: none;
+        margin: 0 0.5rem;
+      }
+      .footer-links a:hover {
+        color: var(--accent-green);
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <nav class="navbar">
-        <div class="nav-container">
-            <img src="https://i.ibb.co/1GBn25c5/VID-20260310-172522-610-ezgif-com-video-to-gif-converter.gif" alt="Logo" class="nav-logo">
-            <div class="nav-credits">
-                <i class="fas fa-coins"></i> Credits: {{ user.credits }}
-            </div>
-            <div class="nav-user">
-                <i class="fas fa-user-circle"></i> {{ user.username }}
-            </div>
-            <div class="nav-buttons">
-                <a href="{{ url_for('logout') }}" class="btn-logout">
-                    <i class="fas fa-sign-out-alt"></i> Logout
-                </a>
-                <a href="{{ url_for('access_panel') }}" class="btn-premium">
-                    <i class="fas fa-crown"></i> Access All Panel
-                </a>
-            </div>
+      <div class="nav-container">
+        <img
+          src="https://i.ibb.co/1GBn25c5/VID-20260310-172522-610-ezgif-com-video-to-gif-converter.gif"
+          alt="Logo"
+          class="nav-logo"
+        />
+        <div class="nav-credits">
+          <i class="fas fa-coins"></i> Credits: {{ user.credits }}
         </div>
+        <div class="nav-user">
+          <i class="fas fa-user-circle"></i> {{ user.username }}
+        </div>
+        <div class="nav-buttons">
+          <a href="{{ url_for('logout') }}" class="btn-logout">
+            <i class="fas fa-sign-out-alt"></i> Logout
+          </a>
+          <a href="{{ url_for('access_panel') }}" class="btn-premium">
+            <i class="fas fa-crown"></i> Access All Panel
+          </a>
+        </div>
+      </div>
     </nav>
 
     <div class="container">
-        <div class="dashboard-grid">
-
-            <!-- Credits Card -->
-            <div class="card">
-                <h2><i class="fas fa-coins"></i> Your Credits</h2>
-                <div class="credits-display">{{ user.credits }}</div>
-                <a href="{{ url_for('payment_page') }}" class="btn-primary">
-                    <i class="fas fa-plus-circle"></i> Add Credits
-                </a>
-            </div>
-
-            <!-- Generate Key Card -->
-            <div class="card">
-                <h2><i class="fas fa-key"></i> Generate Key</h2>
-                <div class="form-group">
-                    <label>Select Product:</label>
-                    <select id="product-select" class="product-dropdown">
-                        <option value="">Choose a product...</option>
-                        {% for product in products %}
-                        <option value="{{ product.id }}"
-                                data-cost="{{ product.credit_cost_per_day }}"
-                                data-price="{{ product.price_per_day }}"
-                                data-type="{{ product.key_type }}">
-                            {{ product.name }} — {{ product.credit_cost_per_day }} credits/day
-                        </option>
-                        {% endfor %}
-                    </select>
-                </div>
-
-                <div id="days-selection" style="display:none;">
-                    <div class="form-group">
-                        <label>Duration:</label>
-                        <select id="days-select" class="days-dropdown">
-                            <option value="1">1 day</option>
-                            <option value="3">3 days (Save 25%)</option>
-                            <option value="7">7 days (Save 30%)</option>
-                            <option value="15">15 days (Save 40%)</option>
-                            <option value="30">30 days (Save 50%)</option>
-                            <option value="60">60 days (Save 55%)</option>
-                            <option value="90">90 days (Save 60%)</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div id="product-details" class="product-details" style="display:none;">
-                    <p>Credits per day: <span id="cost-per-day"></span></p>
-                    <hr>
-                    <p><strong>Total Credits Needed: <span id="total-credits" class="neon-text-green"></span></strong></p>
-
-                    <div id="discount-info" style="margin-top:12px;padding:11px;background:rgba(255,255,255,0.06);border-radius:10px;border-left:3px solid var(--accent-yellow);">
-                        <p style="font-size:0.92rem;color:var(--text-secondary);margin-bottom:4px;">
-                            <i class="fas fa-tag"></i> Original: <span id="original-price" style="color:var(--accent-yellow);font-weight:bold;">0</span> credits
-                        </p>
-                        <p style="font-size:0.92rem;color:var(--text-secondary);">
-                            <i class="fas fa-gift" style="color:var(--accent-green);"></i> You Save: <span id="savings" style="color:var(--accent-green);font-weight:bold;">0</span> credits
-                        </p>
-                        <p style="font-size:0.82rem;color:var(--accent-pink);margin-top:7px;">⚡ Longer duration = Better savings!</p>
-                    </div>
-
-                    <button id="generate-key" class="btn-primary" disabled style="margin-top:1rem;">
-                        <i class="fas fa-magic"></i> Generate Key
-                    </button>
-                </div>
-
-                <!-- Generated Key Display -->
-                <div id="generated-key" class="generated-key" style="display:none;">
-                    <h3><i class="fas fa-key"></i> Your Key / Credentials:</h3>
-                    <div class="key-display" style="white-space:pre-line;"></div>
-                    <button id="copy-key-btn">
-                        <i class="fas fa-copy"></i> Copy Key
-                    </button>
-                    <p id="reload-hint"></p>
-                </div>
-            </div>
-
-            <!-- HWID Reset Card -->
-            <div class="card">
-                <h2><i class="fas fa-microchip"></i> HWID Management</h2>
-                <button id="hwid-reset-all" class="btn-primary">
-                    <i class="fas fa-sync-alt"></i> Reset All HWID
-                </button>
-                <p class="hwid-note">Resets HWID for all your active licenses</p>
-            </div>
-
-            <!-- Your Keys Table -->
-            <div class="card full-width">
-                <h2><i class="fas fa-list"></i> Your Generated Keys</h2>
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Key / Credentials</th>
-                                <th>Product</th>
-                                <th>Days</th>
-                                <th>Credits Used</th>
-                                <th>Expiry</th>
-                                <th>Status</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for license in licenses %}
-                            <tr>
-                                <td class="key-cell">{{ license.key }}</td>
-                                <td>{{ license.product_name }}</td>
-                                <td>{{ license.days }} days</td>
-                                <td>{{ license.total_credits }}</td>
-                                <td>
-                                    {% if license.expiry_date %}
-                                        {% if license.expiry_date.strftime %}
-                                            {{ license.expiry_date.strftime('%Y-%m-%d %H:%M') }}
-                                        {% else %}
-                                            {{ license.expiry_date[:16] }}
-                                        {% endif %}
-                                    {% else %}N/A{% endif %}
-                                </td>
-                                <td>
-                                    <span class="status-badge status-{{ license.status }}">{{ license.status }}</span>
-                                </td>
-                                <td>
-                                    <button class="btn-small btn-hwid-reset" data-license-id="{{ license.id }}">
-                                        <i class="fas fa-sync"></i> Reset HWID
-                                    </button>
-                                </td>
-                            </tr>
-                            {% else %}
-                            <tr>
-                                <td colspan="7" style="text-align:center;color:var(--text-secondary);">
-                                    No keys generated yet
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Payment History -->
-            <div class="card full-width" style="margin-top:1rem;">
-                <h2><i class="fas fa-credit-card"></i> Your Payment History</h2>
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Method</th>
-                                <th>UTR / Order ID</th>
-                                <th>Amount</th>
-                                <th>Credits</th>
-                                <th>Date</th>
-                                <th>Status</th>
-                                <th>Reason (if rejected)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for payment in payments %}
-                            <tr>
-                                <td>
-                                    {% if payment.payment_method == 'binance' %}
-                                    <span class="key-type-badge" style="background:#f0b90b;color:black;">BINANCE</span>
-                                    {% else %}
-                                    <span class="key-type-badge">UPI</span>
-                                    {% endif %}
-                                </td>
-                                <td><code>{{ payment.utr or payment.order_id }}</code></td>
-                                <td>₹{{ payment.amount }}</td>
-                                <td>{{ payment.credits_added }}</td>
-                                <td>
-                                    {% if payment.date %}
-                                        {% if payment.date.strftime %}
-                                            {{ payment.date.strftime('%Y-%m-%d %H:%M') }}
-                                        {% else %}
-                                            {{ payment.date[:16] }}
-                                        {% endif %}
-                                    {% else %}N/A{% endif %}
-                                </td>
-                                <td>
-                                    {% if payment.status == 'approved' %}
-                                    <span class="status-badge status-active">APPROVED</span>
-                                    {% elif payment.status == 'rejected' %}
-                                    <span class="status-badge status-inactive">REJECTED</span>
-                                    {% else %}
-                                    <span class="status-badge status-pending">PENDING</span>
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {% if payment.status == 'rejected' and payment.rejection_reason %}
-                                    <span style="color:var(--accent-red);">{{ payment.rejection_reason }}</span>
-                                    {% elif payment.status == 'rejected' %}
-                                    <span style="color:var(--accent-red);">Rejected by admin</span>
-                                    {% endif %}
-                                </td>
-                            </tr>
-                            {% else %}
-                            <tr>
-                                <td colspan="7" style="text-align:center;color:var(--text-secondary);">
-                                    No payment history found
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
+      <div class="dashboard-grid">
+        <!-- Credits Card -->
+        <div class="card">
+          <h2><i class="fas fa-coins"></i> Your Credits</h2>
+          <div class="credits-display">{{ user.credits }}</div>
+          <a href="{{ url_for('payment_page') }}" class="btn-primary">
+            <i class="fas fa-plus-circle"></i> Add Credits
+          </a>
         </div>
+
+        <!-- Generate Key Card -->
+        <div class="card">
+          <h2><i class="fas fa-key"></i> Generate Key</h2>
+          <div class="form-group">
+            <label>Select Product:</label>
+            <select id="product-select" class="product-dropdown">
+              <option value="">Choose a product...</option>
+              {% for product in products %}
+              <option
+                value="{{ product.id }}"
+                data-cost="{{ product.credit_cost_per_day }}"
+                data-price="{{ product.price_per_day }}"
+                data-type="{{ product.key_type }}"
+              >
+                {{ product.name }} — {{ product.credit_cost_per_day }}
+                credits/day
+              </option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div id="days-selection" style="display: none">
+            <div class="form-group">
+              <label>Duration:</label>
+              <select id="days-select" class="days-dropdown">
+                <option value="1">1 day</option>
+                <option value="3">3 days (Save 25%)</option>
+                <option value="7">7 days (Save 30%)</option>
+                <option value="15">15 days (Save 40%)</option>
+                <option value="30">30 days (Save 50%)</option>
+                <option value="60">60 days (Save 55%)</option>
+                <option value="90">90 days (Save 60%)</option>
+              </select>
+            </div>
+          </div>
+
+          <div
+            id="product-details"
+            class="product-details"
+            style="display: none"
+          >
+            <p>Credits per day: <span id="cost-per-day"></span></p>
+            <hr />
+            <p>
+              <strong
+                >Total Credits Needed:
+                <span id="total-credits" class="neon-text-green"></span
+              ></strong>
+            </p>
+
+            <div
+              id="discount-info"
+              style="
+                margin-top: 12px;
+                padding: 11px;
+                background: rgba(255, 255, 255, 0.06);
+                border-radius: 10px;
+                border-left: 3px solid var(--accent-yellow);
+              "
+            >
+              <p
+                style="
+                  font-size: 0.92rem;
+                  color: var(--text-secondary);
+                  margin-bottom: 4px;
+                "
+              >
+                <i class="fas fa-tag"></i> Original:
+                <span
+                  id="original-price"
+                  style="color: var(--accent-yellow); font-weight: bold"
+                  >0</span
+                >
+                credits
+              </p>
+              <p style="font-size: 0.92rem; color: var(--text-secondary)">
+                <i class="fas fa-gift" style="color: var(--accent-green)"></i>
+                You Save:
+                <span
+                  id="savings"
+                  style="color: var(--accent-green); font-weight: bold"
+                  >0</span
+                >
+                credits
+              </p>
+              <p
+                style="
+                  font-size: 0.82rem;
+                  color: var(--accent-pink);
+                  margin-top: 7px;
+                "
+              >
+                ⚡ Longer duration = Better savings!
+              </p>
+            </div>
+
+            <button
+              id="generate-key"
+              class="btn-primary"
+              disabled
+              style="margin-top: 1rem"
+            >
+              <i class="fas fa-magic"></i> Generate Key
+            </button>
+          </div>
+
+          <!-- Generated Key Display -->
+          <div id="generated-key" class="generated-key" style="display: none">
+            <h3><i class="fas fa-key"></i> Your Key / Credentials:</h3>
+            <div class="key-display" style="white-space: pre-line"></div>
+            <button id="copy-key-btn">
+              <i class="fas fa-copy"></i> Copy Key
+            </button>
+            <p id="reload-hint"></p>
+          </div>
+        </div>
+
+        <!-- Refer & Earn Card -->
+        <div class="card">
+          <h2>
+            <i class="fas fa-gift" style="color: var(--accent-pink)"></i> Refer
+            & Earn System
+          </h2>
+          <div
+            style="
+              background: var(--bg-secondary);
+              padding: 1rem;
+              border-radius: 10px;
+              margin-bottom: 1rem;
+              border: 1px solid rgba(255, 255, 255, 0.05);
+            "
+          >
+            <p style="font-size: 0.9rem; margin-bottom: 0.8rem">
+              🎁 Get
+              <strong style="color: var(--accent-green)">0.45 Credits</strong>
+              instantly when someone registers using your link!<br />
+              💥 Plus, get
+              <strong style="color: var(--accent-yellow)">30 Credits</strong>
+              per ₹1000 whenever they recharge! (up to ₹10,000 top-ups)
+            </p>
+
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 1rem;
+                border-top: 1px dashed var(--border-color);
+                padding-top: 1rem;
+                margin-top: 1rem;
+              "
+            >
+              <div style="text-align: center">
+                <span style="font-size: 1.5rem; font-weight: bold; color: white"
+                  >{{ user.total_referrals }}</span
+                >
+                <div
+                  style="
+                    font-size: 0.75rem;
+                    color: var(--text-secondary);
+                    text-transform: uppercase;
+                  "
+                >
+                  Total Invites
+                </div>
+              </div>
+              <div style="text-align: center">
+                <span
+                  style="
+                    font-size: 1.5rem;
+                    font-weight: bold;
+                    color: var(--accent-green);
+                  "
+                  >{{ "%.2f"|format(user.referral_earnings) }}</span
+                >
+                <div
+                  style="
+                    font-size: 0.75rem;
+                    color: var(--text-secondary);
+                    text-transform: uppercase;
+                  "
+                >
+                  Credits Earned
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 0">
+            <label>Your Referral Link</label>
+            <div style="display: flex; gap: 0.5rem">
+              <input
+                type="text"
+                id="ref-link"
+                value="{{ request.url_root }}register?ref={{ user.referral_code }}"
+                readonly
+                style="flex-grow: 1; font-size: 0.8rem; padding: 0.5rem"
+              />
+              <button
+                onclick="copyRefLink()"
+                class="btn-primary"
+                style="padding: 0.5rem 1rem"
+              >
+                <i class="fas fa-copy"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- HWID Reset Card -->
+        <div class="card">
+          <h2><i class="fas fa-microchip"></i> HWID Management</h2>
+          <button id="hwid-reset-all" class="btn-primary">
+            <i class="fas fa-sync-alt"></i> Reset All HWID
+          </button>
+          <p class="hwid-note">Resets HWID for all your active licenses</p>
+        </div>
+
+        <!-- Your Keys Table -->
+        <div class="card full-width">
+          <h2><i class="fas fa-list"></i> Your Generated Keys</h2>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Key / Credentials</th>
+                  <th>Product</th>
+                  <th>Days</th>
+                  <th>Credits Used</th>
+                  <th>Expiry</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for license in licenses %}
+                <tr>
+                  <td class="key-cell">{{ license.key }}</td>
+                  <td>{{ license.product_name }}</td>
+                  <td>{{ license.days }} days</td>
+                  <td>{{ license.total_credits }}</td>
+                  <td>
+                    {% if license.expiry_date %} {% if
+                    license.expiry_date.strftime %} {{
+                    license.expiry_date.strftime('%Y-%m-%d %H:%M') }} {% else %}
+                    {{ license.expiry_date[:16] }} {% endif %} {% else %}N/A{%
+                    endif %}
+                  </td>
+                  <td>
+                    <span class="status-badge status-{{ license.status }}"
+                      >{{ license.status }}</span
+                    >
+                  </td>
+                  <td>
+                    <button
+                      class="btn-small btn-hwid-reset"
+                      data-license-id="{{ license.id }}"
+                    >
+                      <i class="fas fa-sync"></i> Reset HWID
+                    </button>
+                  </td>
+                </tr>
+                {% else %}
+                <tr>
+                  <td
+                    colspan="7"
+                    style="text-align: center; color: var(--text-secondary)"
+                  >
+                    No keys generated yet
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Payment History -->
+        <div class="card full-width" style="margin-top: 1rem">
+          <h2><i class="fas fa-credit-card"></i> Your Payment History</h2>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Method</th>
+                  <th>UTR / Order ID</th>
+                  <th>Amount</th>
+                  <th>Credits</th>
+                  <th>Date</th>
+                  <th>Status</th>
+                  <th>Reason (if rejected)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for payment in payments %}
+                <tr>
+                  <td>
+                    {% if payment.payment_method == 'binance' %}
+                    <span
+                      class="key-type-badge"
+                      style="background: #f0b90b; color: black"
+                      >BINANCE</span
+                    >
+                    {% else %}
+                    <span class="key-type-badge">UPI</span>
+                    {% endif %}
+                  </td>
+                  <td><code>{{ payment.utr or payment.order_id }}</code></td>
+                  <td>₹{{ payment.amount }}</td>
+                  <td>{{ payment.credits_added }}</td>
+                  <td>
+                    {% if payment.date %} {% if payment.date.strftime %} {{
+                    payment.date.strftime('%Y-%m-%d %H:%M') }} {% else %} {{
+                    payment.date[:16] }} {% endif %} {% else %}N/A{% endif %}
+                  </td>
+                  <td>
+                    {% if payment.status == 'approved' %}
+                    <span class="status-badge status-active">APPROVED</span>
+                    {% elif payment.status == 'rejected' %}
+                    <span class="status-badge status-inactive">REJECTED</span>
+                    {% else %}
+                    <span class="status-badge status-pending">PENDING</span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if payment.status == 'rejected' and
+                    payment.rejection_reason %}
+                    <span style="color: var(--accent-red)"
+                      >{{ payment.rejection_reason }}</span
+                    >
+                    {% elif payment.status == 'rejected' %}
+                    <span style="color: var(--accent-red)"
+                      >Rejected by admin</span
+                    >
+                    {% endif %}
+                  </td>
+                </tr>
+                {% else %}
+                <tr>
+                  <td
+                    colspan="7"
+                    style="text-align: center; color: var(--text-secondary)"
+                  >
+                    No payment history found
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Support Section -->
-    <div class="support-section" style="margin:2rem 1.5rem;">
-        <h3><i class="fas fa-headset"></i> Need Help?</h3>
-        <div class="support-grid">
-            <a href="{{ telegram_support }}" target="_blank" class="support-card telegram">
-                <i class="fab fa-telegram"></i>
-                <span>Telegram Support</span>
-                <small>Chat with admin</small>
-            </a>
-            <a href="{{ whatsapp_channel }}" target="_blank" class="support-card whatsapp">
-                <i class="fab fa-whatsapp"></i>
-                <span>WhatsApp Channel</span>
-                <small>Join for updates</small>
-            </a>
-        </div>
+    <div class="support-section" style="margin: 2rem 1.5rem">
+      <h3><i class="fas fa-headset"></i> Need Help?</h3>
+      <div class="support-grid">
+        <a
+          href="{{ telegram_support }}"
+          target="_blank"
+          class="support-card telegram"
+        >
+          <i class="fab fa-telegram"></i>
+          <span>Telegram Support</span>
+          <small>Chat with admin</small>
+        </a>
+        <a
+          href="{{ whatsapp_channel }}"
+          target="_blank"
+          class="support-card whatsapp"
+        >
+          <i class="fab fa-whatsapp"></i>
+          <span>WhatsApp Channel</span>
+          <small>Join for updates</small>
+        </a>
+      </div>
     </div>
 
     <div class="footer-links">
-        <p>&copy; 2026 Neon Dashboard. All rights reserved.</p>
-        <a href="{{ url_for('privacy') }}">Privacy Policy</a> |
-        <a href="{{ url_for('terms') }}">Terms of Service</a> |
-        <a href="{{ telegram_support }}">Contact Us</a>
+      <p>&copy; 2026 Neon Dashboard. All rights reserved.</p>
+      <a href="{{ url_for('privacy') }}">Privacy Policy</a> |
+      <a href="{{ url_for('terms') }}">Terms of Service</a> |
+      <a href="{{ telegram_support }}">Contact Us</a>
     </div>
 
     <script src="{{ url_for('static', filename='script.js') }}"></script>
-</body>
+    <script>
+      function copyRefLink() {
+        var copyText = document.getElementById("ref-link");
+        copyText.select();
+        copyText.setSelectionRange(0, 99999); /* For mobile devices */
+        navigator.clipboard.writeText(copyText.value);
+        alert("Referral link copied!");
+      }
+    </script>
+  </body>
 </html>
